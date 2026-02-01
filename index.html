@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>坂道ツール</title>
 
-  <!-- ✅ 最低限CSP（外部JS禁止・同一オリジンのみ） -->
+  <!-- 最低限CSP（外部JSなし・同一オリジンのみ） -->
   <meta http-equiv="Content-Security-Policy"
         content="default-src 'self';
                  script-src 'self';
@@ -17,8 +17,9 @@
                  upgrade-insecure-requests">
 
   <meta name="description" content="坂道3グループ対応の推し活ツール（登録なし・端末内保存・GitHub Pagesで動作）" />
-  <link rel="stylesheet" href="./styles.css?v=1" />
+  <link rel="stylesheet" href="./styles.css?v=2" />
 </head>
+
 <body>
   <header class="topbar">
     <div class="topbar__inner">
@@ -26,12 +27,12 @@
         <div class="brand__logo" aria-hidden="true">坂</div>
         <div class="brand__texts">
           <h1 class="brand__title">坂道ツール</h1>
-          <p class="brand__sub">登録なし / 端末内保存 / GitHub Pagesで動作</p>
+          <p class="brand__sub">登録なし / 端末内保存 / 外部ライブラリなし</p>
         </div>
       </div>
 
       <div class="topbar__actions">
-        <button id="themeBtn" class="btn btn--ghost" type="button" aria-label="ダークモード切替">
+        <button id="themeBtn" class="btn btn--ghost" type="button" aria-label="ライト/ダーク切替">
           <span class="btn__icon" aria-hidden="true">☾</span>
           <span class="btn__text">Theme</span>
         </button>
@@ -40,9 +41,10 @@
 
     <div class="notice">
       <div class="notice__inner">
-        <div class="notice__badge">安全メモ</div>
+        <div class="notice__badge">安全</div>
         <p class="notice__text">
-          <strong>本名・住所・学校名・連絡先・SNS ID</strong>など個人情報は入力しないでください。入力内容は<strong>あなたの端末内（localStorage）</strong>に保存され、サーバーへ送信されません。
+          <strong>本名・住所・学校名・連絡先・SNS ID</strong>など個人情報は入力しないでください。
+          入力内容は<strong>あなたの端末内（localStorage）</strong>に保存され、外部へ送信されません。
         </p>
       </div>
     </div>
@@ -56,17 +58,18 @@
   </header>
 
   <main class="container">
-    <!-- ===== Colors ===== -->
+    <!-- ================= Colors ================= -->
     <section id="tab-colors" class="panel is-active" aria-labelledby="colorsTitle">
       <div class="panel__head">
         <div>
           <h2 id="colorsTitle" class="panel__title">サイリウムカラー（メンバー別）</h2>
-          <p class="panel__desc">グループ切替＆検索で一瞬で見つけられます。</p>
+          <p class="panel__desc">サイドで条件 → 中央に一覧 → 右でお気に入り・使い方。縦だらけにならない設計。</p>
         </div>
       </div>
 
-      <div class="grid grid--2">
-        <div class="card">
+      <div class="layout3">
+        <!-- left: filters -->
+        <aside class="card card--sticky">
           <div class="card__head">
             <h3 class="card__title">絞り込み</h3>
           </div>
@@ -91,25 +94,28 @@
           <div class="field">
             <label class="label" for="colorSearch">検索（名前/かな/愛称）</label>
             <input id="colorSearch" class="input" type="search" placeholder="例：遠藤 / てん / こさかな" />
-            <p class="help">ひらがな・カタカナ・漢字どれでもOK</p>
+            <p class="help">ひらがな・カタカナ・漢字OK</p>
           </div>
 
           <div class="row row--wrap">
-            <button id="copyShareBtn" class="btn" type="button">この条件をURLにコピー</button>
-            <button id="resetFilterBtn" class="btn btn--ghost" type="button">絞り込みリセット</button>
+            <button id="resetFilterBtn" class="btn btn--ghost" type="button">リセット</button>
+            <button id="copyShareBtn" class="btn" type="button">条件URLコピー</button>
           </div>
 
           <div class="divider"></div>
 
           <details class="details">
-            <summary>データについて</summary>
-            <p class="small muted">
-              このページは静的サイトのため、自動更新はありません。必要ならapp.js内のデータを更新してください。
-            </p>
+            <summary>見方のコツ</summary>
+            <ul class="small muted">
+              <li>「全部」→ 検索でメンバーを一発</li>
+              <li>「期」→ 同期で探しやすい</li>
+              <li>お気に入り（★）→ よく使う推しを固定</li>
+            </ul>
           </details>
-        </div>
+        </aside>
 
-        <div class="card">
+        <!-- center: table -->
+        <section class="card card--wide" aria-label="一覧">
           <div class="card__head">
             <h3 class="card__title">一覧</h3>
             <div class="pill" id="countPill">0件</div>
@@ -119,41 +125,71 @@
             <table class="table">
               <thead>
                 <tr>
+                  <th class="colFav">★</th>
                   <th>グループ</th>
                   <th>期</th>
                   <th>名前</th>
                   <th>メンバーカラー</th>
                 </tr>
               </thead>
-              <tbody id="colorsTbody">
-                <!-- JS -->
-              </tbody>
+              <tbody id="colorsTbody"></tbody>
             </table>
           </div>
 
           <p class="small muted mt8">
-            ※色は環境により見え方が変わります。現場の公式説明・公式ペンライトの色味を優先してください。
+            ※色は環境で見え方が変わります。現場の公式ペンライトの色味を優先してください。
           </p>
-        </div>
+        </section>
+
+        <!-- right: favorites -->
+        <aside class="card card--sticky">
+          <div class="card__head">
+            <h3 class="card__title">お気に入り（★）</h3>
+            <div class="pill" id="favPill">0人</div>
+          </div>
+
+          <div class="field">
+            <label class="label" for="favGroup">表示グループ</label>
+            <select id="favGroup" class="select">
+              <option value="all">すべて</option>
+              <option value="nogi">乃木坂46</option>
+              <option value="sakura">櫻坂46</option>
+              <option value="hinata">日向坂46</option>
+            </select>
+          </div>
+
+          <div id="favList" class="favList"></div>
+
+          <div class="divider"></div>
+
+          <div class="row row--wrap">
+            <button id="clearFavBtn" class="btn btn--danger" type="button">お気に入り全解除</button>
+          </div>
+
+          <details class="details mt12">
+            <summary>安全メモ</summary>
+            <p class="small muted">
+              ここは静的サイト。投稿機能なし。あなたの端末だけに保存されます。
+            </p>
+          </details>
+        </aside>
       </div>
     </section>
 
-    <!-- ===== Notes ===== -->
+    <!-- ================= Notes ================= -->
     <section id="tab-notes" class="panel" aria-labelledby="notesTitle">
       <div class="panel__head">
         <div>
           <h2 id="notesTitle" class="panel__title">推し活ノート（端末内保存）</h2>
-          <p class="panel__desc">現場メモ／座席／物販／セトリ感想など。共有・投稿機能なし。</p>
+          <p class="panel__desc">現場メモ/座席/物販/感想。共有・投稿機能なし。</p>
         </div>
       </div>
 
-      <div class="grid grid--2">
-        <div class="card">
-          <div class="card__head">
-            <h3 class="card__title">新規メモ</h3>
-          </div>
+      <div class="layout2">
+        <section class="card">
+          <div class="card__head"><h3 class="card__title">新規メモ</h3></div>
 
-          <div class="grid grid--2">
+          <div class="grid2">
             <div class="field">
               <label class="label" for="noteGroup">グループ</label>
               <select id="noteGroup" class="select">
@@ -163,6 +199,7 @@
                 <option value="common">共通</option>
               </select>
             </div>
+
             <div class="field">
               <label class="label" for="noteDate">日付</label>
               <input id="noteDate" class="input" type="date" />
@@ -187,7 +224,7 @@
 
           <div class="field">
             <label class="label" for="noteText">メモ</label>
-            <textarea id="noteText" class="textarea" rows="6" placeholder="個人情報は書かない。例：持ち物/導線/注意点/感想"></textarea>
+            <textarea id="noteText" class="textarea" rows="7" placeholder="個人情報は書かない。例：導線/注意点/感想"></textarea>
           </div>
 
           <div class="field">
@@ -211,44 +248,43 @@
           </div>
 
           <p class="small muted mt8">
-            ※インポートは「自分の端末移行用」。他人から受け取ったJSONは読み込まないでください。
+            ※他人から受け取ったJSONは読み込まないでください。
           </p>
-        </div>
+        </section>
 
-        <div class="card">
+        <section class="card">
           <div class="card__head">
             <h3 class="card__title">メモ一覧</h3>
             <div class="pill" id="notesCount">0件</div>
           </div>
 
-          <div class="field">
-            <label class="label" for="notesSearch">検索（本文/会場/タグ）</label>
-            <input id="notesSearch" class="input" type="search" placeholder="例：物販 / 座席 / #注意点" />
+          <div class="grid2">
+            <div class="field">
+              <label class="label" for="notesSearch">検索</label>
+              <input id="notesSearch" class="input" type="search" placeholder="例：物販 / 座席 / #注意点" />
+            </div>
+            <div class="field">
+              <label class="label" for="notesFilterGroup">グループ</label>
+              <select id="notesFilterGroup" class="select">
+                <option value="all">すべて</option>
+                <option value="nogi">乃木坂46</option>
+                <option value="sakura">櫻坂46</option>
+                <option value="hinata">日向坂46</option>
+                <option value="common">共通</option>
+              </select>
+            </div>
           </div>
 
-          <div class="field">
-            <label class="label" for="notesFilterGroup">グループ</label>
-            <select id="notesFilterGroup" class="select">
-              <option value="all">すべて</option>
-              <option value="nogi">乃木坂46</option>
-              <option value="sakura">櫻坂46</option>
-              <option value="hinata">日向坂46</option>
-              <option value="common">共通</option>
-            </select>
-          </div>
-
-          <div id="notesList" class="list">
-            <!-- JS -->
-          </div>
+          <div id="notesList" class="list"></div>
 
           <div class="row row--wrap mt12">
             <button id="clearAllNotesBtn" class="btn btn--danger" type="button">全メモ削除</button>
           </div>
-        </div>
+        </section>
       </div>
     </section>
 
-    <!-- ===== Checklist ===== -->
+    <!-- ================= Checklist ================= -->
     <section id="tab-checklist" class="panel" aria-labelledby="checkTitle">
       <div class="panel__head">
         <div>
@@ -257,11 +293,9 @@
         </div>
       </div>
 
-      <div class="grid grid--2">
-        <div class="card">
-          <div class="card__head">
-            <h3 class="card__title">チェック対象</h3>
-          </div>
+      <div class="layout2">
+        <section class="card">
+          <div class="card__head"><h3 class="card__title">設定</h3></div>
 
           <div class="field">
             <label class="label" for="checkGroup">グループ</label>
@@ -288,35 +322,30 @@
             </div>
             <p class="help">個人情報は入れない</p>
           </div>
-        </div>
+        </section>
 
-        <div class="card">
+        <section class="card">
           <div class="card__head">
             <h3 class="card__title">持ち物</h3>
             <div class="pill" id="checkProgress">0/0</div>
           </div>
-
-          <div id="checkList" class="checklist">
-            <!-- JS -->
-          </div>
-        </div>
+          <div id="checkList" class="checklist"></div>
+        </section>
       </div>
     </section>
 
-    <!-- ===== Links ===== -->
+    <!-- ================= Links ================= -->
     <section id="tab-links" class="panel" aria-labelledby="linksTitle">
       <div class="panel__head">
         <div>
           <h2 id="linksTitle" class="panel__title">公式リンク（安全属性つき）</h2>
-          <p class="panel__desc">公式・注意喚起は「公式情報を優先」の考え方でまとめ。</p>
+          <p class="panel__desc">公式・注意喚起は「公式情報優先」。外部リンクはnoopener/noreferrer。</p>
         </div>
       </div>
 
-      <div class="grid grid--2">
-        <div class="card">
-          <div class="card__head">
-            <h3 class="card__title">公式サイト</h3>
-          </div>
+      <div class="layout2">
+        <section class="card">
+          <div class="card__head"><h3 class="card__title">公式サイト</h3></div>
           <ul class="linkList">
             <li><a class="link" href="https://www.nogizaka46.com/" target="_blank" rel="noopener noreferrer">乃木坂46 公式</a></li>
             <li><a class="link" href="https://sakurazaka46.com/" target="_blank" rel="noopener noreferrer">櫻坂46 公式</a></li>
@@ -333,13 +362,10 @@
               <li>転売・詐欺・怪しいDM勧誘に注意</li>
             </ul>
           </div>
-        </div>
+        </section>
 
-        <div class="card">
-          <div class="card__head">
-            <h3 class="card__title">このサイトの保存/削除</h3>
-          </div>
-
+        <section class="card">
+          <div class="card__head"><h3 class="card__title">保存/削除</h3></div>
           <p class="small muted">
             データはこの端末のブラウザに保存されます。共有されません。
           </p>
@@ -348,26 +374,21 @@
             <button id="wipeAllBtn" class="btn btn--danger" type="button">全データを初期化（localStorage）</button>
           </div>
 
-          <div class="divider"></div>
-
-          <details class="details">
-            <summary>Q. オープン公開（GitHub Pages）で安全？</summary>
+          <details class="details mt12">
+            <summary>Q. オープン公開で安全？</summary>
             <p class="small muted">
-              サーバー機能がない静的サイトなので、入力内容が自動で外部送信される設計ではありません。
-              ただし、あなたが個人情報を書き込めば端末内に残るので、入力しないのが一番安全です。
+              静的サイトなので、自動送信する仕組みはありません。とはいえ、個人情報を入力しないのが最も安全です。
             </p>
           </details>
-        </div>
+        </section>
       </div>
     </section>
   </main>
 
   <footer class="footer">
-    <p class="small muted">
-      © 坂道ツール / 静的サイト（GitHub Pages） / 外部ライブラリなし
-    </p>
+    <p class="small muted">© 坂道ツール / 静的サイト（GitHub Pages） / 外部ライブラリなし</p>
   </footer>
 
-  <script src="./app.js?v=1"></script>
+  <script src="./app.js?v=2"></script>
 </body>
 </html>
