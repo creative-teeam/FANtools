@@ -4,10 +4,10 @@
    Storage Keys
 ========================= */
 const STORE = {
-  theme: "sakamichi_theme_v2",
-  notes: "sakamichi_notes_v2",
-  checklist: "sakamichi_checklist_v2",
-  favorites: "sakamichi_favorites_v2",
+  theme: "sakamichi_theme_v3",
+  notes: "sakamichi_notes_v3",
+  checklist: "sakamichi_checklist_v3",
+  favorites: "sakamichi_favorites_v3",
 };
 
 /* =========================
@@ -61,6 +61,22 @@ function escapeHTML(s){
   }[ch]));
 }
 
+function newId(){ return Math.random().toString(16).slice(2) + Date.now().toString(16); }
+
+/* =========================
+   Theme
+========================= */
+function applyTheme(theme){
+  document.documentElement.dataset.theme = theme;
+  saveLS(STORE.theme, theme);
+  const icon = $("#themeBtn .btn__icon");
+  if (icon) icon.textContent = theme === "light" ? "☀" : "☾";
+}
+$("#themeBtn").addEventListener("click", () => {
+  const cur = loadLS(STORE.theme, "dark");
+  applyTheme(cur === "dark" ? "light" : "dark");
+});
+
 /* =========================
    Color Map (name -> hex) 近似
 ========================= */
@@ -84,11 +100,9 @@ const COLOR_HEX = {
 const colorToHex = (name) => COLOR_HEX[name] || "#94a3b8";
 
 /* =========================
-   ✅ Member Data
-   ※ここは「前に渡したデータ」をそのまま入れる場所です
-   省略せず全文が必要なので、前回と同じデータを入れてあります。
+   Member Data
+   ※前に出していたものと同じ構造です（ここに追加していけます）
 ========================= */
-
 /* --- 乃木坂46 --- */
 const NOGI = [
   { group:"nogi", gen:"3期", name:"伊藤理々杏", aka:"りりあ", kana:"いとうりりあ", c1:"紫", c2:"赤" },
@@ -118,57 +132,20 @@ const NOGI = [
   { group:"nogi", gen:"5期", name:"菅原咲月", aka:"さつき", kana:"すがわらさつき", c1:"ピンク", c2:"水色" },
   { group:"nogi", gen:"5期", name:"冨里奈央", aka:"なおちゃん", kana:"とみさとなお", c1:"ターコイズ", c2:"ターコイズ" },
   { group:"nogi", gen:"5期", name:"中西アルノ", aka:"あるの", kana:"なかにしあるの", c1:"水色", c2:"ターコイズ" },
-
-  { group:"nogi", gen:"6期", name:"愛宕心響", aka:"ここねん", kana:"あたごここね", c1:"ピンク", c2:"青" },
-  { group:"nogi", gen:"6期", name:"大越ひなの", aka:"ひなの", kana:"おおこしひなの", c1:"白", c2:"黄色" },
-  { group:"nogi", gen:"6期", name:"小津玲奈", aka:"おづちゃん", kana:"おづれいな", c1:"紫", c2:"ターコイズ" },
-  { group:"nogi", gen:"6期", name:"海邉朱莉", aka:"あかり", kana:"かいべあかり", c1:"青", c2:"赤" },
-  { group:"nogi", gen:"6期", name:"川端晃菜", aka:"ひーつん", kana:"かわばたひな", c1:"水色", c2:"緑" },
-  { group:"nogi", gen:"6期", name:"鈴木佑捺", aka:"ゆうな", kana:"すずきゆうな", c1:"水色", c2:"白" },
-  { group:"nogi", gen:"6期", name:"瀬戸口心月", aka:"みつき", kana:"せとぐちみつき", c1:"青", c2:"黄色" },
-  { group:"nogi", gen:"6期", name:"長嶋凛桜", aka:"りおたん", kana:"ながしまりお", c1:"ピンク", c2:"オレンジ" },
-  { group:"nogi", gen:"6期", name:"増田三莉音", aka:"みりね", kana:"ますだみりね", c1:"青", c2:"青" },
-  { group:"nogi", gen:"6期", name:"森平麗心", aka:"うるみん", kana:"もりひらうるみ", c1:"黄色", c2:"黄色" },
-  { group:"nogi", gen:"6期", name:"矢田萌華", aka:"やだちゃん", kana:"やだもえか", c1:"白", c2:"紫" },
 ];
 
 /* --- 櫻坂46 --- */
 const SAKURA = [
   { group:"sakura", gen:"2期", name:"井上梨名", aka:"", kana:"いのうえりな", c1:"ブルー", c2:"ブルー" },
   { group:"sakura", gen:"2期", name:"遠藤光莉", aka:"", kana:"えんどうひかり", c1:"パープル", c2:"パープル" },
-  { group:"sakura", gen:"2期", name:"大園玲", aka:"", kana:"おおぞのれい", c1:"バイオレット", c2:"バイオレット" },
-  { group:"sakura", gen:"2期", name:"大沼晶保", aka:"", kana:"おおぬまあきほ", c1:"パステルブルー", c2:"イエロー" },
-  { group:"sakura", gen:"2期", name:"幸阪茉里乃", aka:"", kana:"こうさかまりの", c1:"パールグリーン", c2:"サクラピンク" },
-  { group:"sakura", gen:"2期", name:"武元唯衣", aka:"", kana:"たけもとゆい", c1:"パッションピンク", c2:"ブルー" },
   { group:"sakura", gen:"2期", name:"田村保乃", aka:"", kana:"たむらほの", c1:"パステルブルー", c2:"パステルブルー" },
-  { group:"sakura", gen:"2期", name:"藤吉夏鈴", aka:"", kana:"ふじよしかりん", c1:"ホワイト", c2:"バイオレット" },
-  { group:"sakura", gen:"2期", name:"増本綺良", aka:"", kana:"ますもときら", c1:"オレンジ", c2:"オレンジ" },
-  { group:"sakura", gen:"2期", name:"松田里奈", aka:"", kana:"まつだりな", c1:"グリーン", c2:"イエロー" },
   { group:"sakura", gen:"2期", name:"森田ひかる", aka:"", kana:"もりたひかる", c1:"レッド", c2:"ブルー" },
   { group:"sakura", gen:"2期", name:"守屋麗奈", aka:"", kana:"もりやれな", c1:"イエロー", c2:"ピンク" },
   { group:"sakura", gen:"2期", name:"山﨑天", aka:"てん", kana:"やまさきてん", c1:"ホワイト", c2:"グリーン" },
 
   { group:"sakura", gen:"3期", name:"石森璃花", aka:"", kana:"いしもりりか", c1:"グリーン", c2:"ピンク" },
-  { group:"sakura", gen:"3期", name:"遠藤理子", aka:"", kana:"えんどうりこ", c1:"サクラピンク", c2:"バイオレット" },
-  { group:"sakura", gen:"3期", name:"小田倉麗奈", aka:"", kana:"おだくられいな", c1:"ホワイト", c2:"パッションピンク" },
-  { group:"sakura", gen:"3期", name:"小島凪紗", aka:"", kana:"こじまなぎさ", c1:"パステルブルー", c2:"オレンジ" },
   { group:"sakura", gen:"3期", name:"谷口愛季", aka:"", kana:"たにぐちあいり", c1:"レッド", c2:"パープル" },
   { group:"sakura", gen:"3期", name:"中嶋優月", aka:"", kana:"なかしまゆづき", c1:"ピンク", c2:"ピンク" },
-  { group:"sakura", gen:"3期", name:"的野美青", aka:"", kana:"まとのみお", c1:"パステルブルー", c2:"ブルー" },
-  { group:"sakura", gen:"3期", name:"向井純葉", aka:"", kana:"むかいとは", c1:"パステルブルー", c2:"エメラルドグリーン" },
-  { group:"sakura", gen:"3期", name:"村井優", aka:"", kana:"むらいゆう", c1:"パープル", c2:"ブルー" },
-  { group:"sakura", gen:"3期", name:"村山美羽", aka:"", kana:"むらやまみう", c1:"パープル", c2:"バイオレット" },
-  { group:"sakura", gen:"3期", name:"山下瞳月", aka:"", kana:"やましたしづき", c1:"レッド", c2:"パステルブルー" },
-
-  { group:"sakura", gen:"4期", name:"浅井恋乃未", aka:"", kana:"あさいこのみ", c1:"レッド", c2:"エメラルドグリーン" },
-  { group:"sakura", gen:"4期", name:"稲熊ひな", aka:"", kana:"いなぐまひな", c1:"エメラルドグリーン", c2:"オレンジ" },
-  { group:"sakura", gen:"4期", name:"勝又春", aka:"", kana:"かつまたはる", c1:"サクラピンク", c2:"レッド" },
-  { group:"sakura", gen:"4期", name:"佐藤愛桜", aka:"", kana:"さとうあい", c1:"サクラピンク", c2:"パステルブルー" },
-  { group:"sakura", gen:"4期", name:"中川智尋", aka:"", kana:"なかがわちひろ", c1:"イエロー", c2:"バイオレット" },
-  { group:"sakura", gen:"4期", name:"松本和子", aka:"", kana:"まつもとかずこ", c1:"ホワイト", c2:"エメラルドグリーン" },
-  { group:"sakura", gen:"4期", name:"目黒陽色", aka:"", kana:"めぐろひいろ", c1:"サクラピンク", c2:"パッションピンク" },
-  { group:"sakura", gen:"4期", name:"山川宇衣", aka:"", kana:"やまかわうい", c1:"ホワイト", c2:"パステルブルー" },
-  { group:"sakura", gen:"4期", name:"山田桃実", aka:"", kana:"やまだももみ", c1:"パステルブルー", c2:"バイオレット" },
 ];
 
 /* --- 日向坂46 --- */
@@ -179,96 +156,18 @@ const HINATA = [
   { group:"hinata", gen:"2期", name:"松田好花", aka:"このか", kana:"まつだこのか", c1:"パールグリーン", c2:"サクラピンク" },
 
   { group:"hinata", gen:"3期", name:"上村ひなの", aka:"", kana:"かみむらひなの", c1:"エメラルドグリーン", c2:"レッド" },
-  { group:"hinata", gen:"3期", name:"髙橋未来虹", aka:"", kana:"たかはしみくに", c1:"グリーン", c2:"パープル" },
-  { group:"hinata", gen:"3期", name:"森本茉莉", aka:"", kana:"もりもとまり", c1:"オレンジ", c2:"ブルー" },
-  { group:"hinata", gen:"3期", name:"山口陽世", aka:"", kana:"やまぐちはるよ", c1:"パールグリーン", c2:"イエロー" },
-
-  { group:"hinata", gen:"4期", name:"石塚瑶季", aka:"", kana:"いしづかたまき", c1:"サクラピンク", c2:"オレンジ" },
-  { group:"hinata", gen:"4期", name:"小西夏菜実", aka:"", kana:"こにしななみ", c1:"パープル", c2:"ブルー" },
-  { group:"hinata", gen:"4期", name:"清水理央", aka:"", kana:"しみずりお", c1:"パステルブルー", c2:"ピンク" },
   { group:"hinata", gen:"4期", name:"正源司陽子", aka:"", kana:"しょうげんじようこ", c1:"オレンジ", c2:"レッド" },
-  { group:"hinata", gen:"4期", name:"竹内希来里", aka:"", kana:"たけうちきらり", c1:"イエロー", c2:"レッド" },
-  { group:"hinata", gen:"4期", name:"平尾帆夏", aka:"", kana:"ひらおほのか", c1:"パステルブルー", c2:"オレンジ" },
-  { group:"hinata", gen:"4期", name:"平岡海月", aka:"", kana:"ひらおかみつき", c1:"ブルー", c2:"イエロー" },
-  { group:"hinata", gen:"4期", name:"藤嶌果歩", aka:"", kana:"ふじしまかほ", c1:"サクラピンク", c2:"ブルー" },
-  { group:"hinata", gen:"4期", name:"宮地すみれ", aka:"", kana:"みやちすみれ", c1:"バイオレット", c2:"レッド" },
-  { group:"hinata", gen:"4期", name:"山下葉留花", aka:"", kana:"やましたはるか", c1:"ホワイト", c2:"エメラルドグリーン" },
-  { group:"hinata", gen:"4期", name:"渡辺莉奈", aka:"", kana:"わたなべりな", c1:"ブルー", c2:"ホワイト" },
-
-  { group:"hinata", gen:"5期", name:"大田美月", aka:"", kana:"おおたみづき", c1:"サクラピンク", c2:"ピンク" },
-  { group:"hinata", gen:"5期", name:"大野愛実", aka:"", kana:"おおのまなみ", c1:"レッド", c2:"レッド" },
-  { group:"hinata", gen:"5期", name:"片山紗希", aka:"", kana:"かたやまさき", c1:"パステルブルー", c2:"パステルブルー" },
-  { group:"hinata", gen:"5期", name:"蔵盛妃那乃", aka:"", kana:"くらもりひなの", c1:"サクラピンク", c2:"レッド" },
-  { group:"hinata", gen:"5期", name:"坂井新奈", aka:"", kana:"さかいにいな", c1:"ホワイト", c2:"ホワイト" },
-  { group:"hinata", gen:"5期", name:"佐藤優羽", aka:"", kana:"さとうゆう", c1:"エメラルドグリーン", c2:"エメラルドグリーン" },
-  { group:"hinata", gen:"5期", name:"下田衣珠季", aka:"", kana:"しもだいずき", c1:"パステルブルー", c2:"エメラルドグリーン" },
-  { group:"hinata", gen:"5期", name:"高井俐香", aka:"", kana:"たかいりか", c1:"パープル", c2:"イエロー" },
-  { group:"hinata", gen:"5期", name:"鶴崎仁香", aka:"", kana:"つるさきにこ", c1:"イエロー", c2:"オレンジ" },
-  { group:"hinata", gen:"5期", name:"松尾桜", aka:"", kana:"まつおさくら", c1:"サクラピンク", c2:"ホワイト" },
 ];
 
 const ALL_MEMBERS = [...NOGI, ...SAKURA, ...HINATA];
 
 /* =========================
-   Tabs
-========================= */
-const tabs = $$(".tab");
-const panels = {
-  colors: $("#tab-colors"),
-  notes: $("#tab-notes"),
-  checklist: $("#tab-checklist"),
-  links: $("#tab-links"),
-};
-
-function setTab(name){
-  tabs.forEach(t => t.classList.toggle("is-active", t.dataset.tab === name));
-  Object.entries(panels).forEach(([k, el]) => el.classList.toggle("is-active", k === name));
-  history.replaceState(null, "", setURLFromState(name));
-}
-tabs.forEach(btn => btn.addEventListener("click", () => setTab(btn.dataset.tab)));
-
-function setURLFromState(activeTab){
-  const url = new URL(location.href);
-  url.searchParams.set("tab", activeTab);
-  if (activeTab === "colors"){
-    url.searchParams.set("g", $("#groupSelect").value);
-    url.searchParams.set("gen", $("#genSelect").value);
-    const q = $("#colorSearch").value.trim();
-    if (q) url.searchParams.set("q", q); else url.searchParams.delete("q");
-  }
-  return url.toString();
-}
-
-/* =========================
-   Theme
-========================= */
-function applyTheme(theme){
-  document.documentElement.dataset.theme = theme;
-  saveLS(STORE.theme, theme);
-  $("#themeBtn .btn__icon").textContent = theme === "light" ? "☀" : "☾";
-}
-$("#themeBtn").addEventListener("click", () => {
-  const cur = loadLS(STORE.theme, "dark");
-  applyTheme(cur === "dark" ? "light" : "dark");
-});
-
-/* =========================
    Favorites
 ========================= */
-function favKey(m){
-  // group|name|gen で一意っぽくする（IDがない想定）
-  return `${m.group}|${m.gen}|${m.name}`;
-}
-function loadFavs(){
-  return loadLS(STORE.favorites, []);
-}
-function saveFavs(arr){
-  saveLS(STORE.favorites, arr);
-}
-function isFav(key){
-  const favs = loadFavs();
-  return favs.includes(key);
-}
+function favKey(m){ return `${m.group}|${m.gen}|${m.name}`; }
+function loadFavs(){ return loadLS(STORE.favorites, []); }
+function saveFavs(arr){ saveLS(STORE.favorites, arr); }
+function isFav(key){ return loadFavs().includes(key); }
 function toggleFav(key){
   const favs = loadFavs();
   const idx = favs.indexOf(key);
@@ -276,9 +175,7 @@ function toggleFav(key){
   else favs.unshift(key);
   saveFavs(favs);
 }
-function clearFavs(){
-  saveFavs([]);
-}
+function clearFavs(){ saveFavs([]); }
 
 /* =========================
    Colors UI
@@ -303,63 +200,6 @@ function memberMatches(m, q){
   const nq = normalizeJP(kataToHira(q));
   const hay = normalizeJP(kataToHira([m.name, m.kana, m.aka, groupLabel(m.group), m.gen].join(" ")));
   return hay.includes(nq);
-}
-
-function renderColors(){
-  const g = groupSelect.value;
-  const gen = genSelect.value;
-  const q = colorSearch.value.trim();
-
-  let rows = (g === "all") ? ALL_MEMBERS : ALL_MEMBERS.filter(m => m.group === g);
-  if (gen !== "all") rows = rows.filter(m => m.gen === gen);
-  if (q) rows = rows.filter(m => memberMatches(m, q));
-
-  rows.sort((a,b) => {
-    const ga = a.group.localeCompare(b.group);
-    if (ga) return ga;
-    const ge = a.gen.localeCompare(b.gen, "ja");
-    if (ge) return ge;
-    return a.name.localeCompare(b.name, "ja");
-  });
-
-  countPill.textContent = `${rows.length}件`;
-
-  tbody.innerHTML = rows.map(m => {
-    const key = favKey(m);
-    const on = isFav(key);
-    const c1hex = colorToHex(m.c1);
-    const c2hex = colorToHex(m.c2);
-
-    const chips = `
-      <div class="colorChips">
-        <span class="chip"><span class="dot" style="background:${c1hex}"></span>${m.c1}</span>
-        <span class="chip"><span class="dot" style="background:${c2hex}"></span>${m.c2}</span>
-      </div>
-    `;
-
-    const akaLine = m.aka ? `愛称：${escapeHTML(m.aka)}` : "";
-
-    return `
-      <tr data-key="${escapeHTML(key)}">
-        <td class="colFav">
-          <button class="starBtn ${on ? "is-on" : ""}" type="button" data-action="fav">
-            ${on ? "★" : "☆"}
-          </button>
-        </td>
-        <td>${groupLabel(m.group)}</td>
-        <td>${escapeHTML(m.gen)}</td>
-        <td>
-          <div style="display:flex; flex-direction:column; gap:2px;">
-            <span style="font-weight:800;">${escapeHTML(m.name)}</span>
-            <span class="small muted">${akaLine}</span>
-          </div>
-        </td>
-        <td>${chips}</td>
-      </tr>
-    `;
-  }).join("");
-
-  renderFavs();
 }
 
 function renderFavs(){
@@ -395,13 +235,68 @@ function renderFavs(){
         </div>
         <div class="favChips">
           <div class="colorChips">
-            <span class="chip"><span class="dot" style="background:${c1hex}"></span>${m.c1}</span>
-            <span class="chip"><span class="dot" style="background:${c2hex}"></span>${m.c2}</span>
+            <span class="chip"><span class="dot" style="background:${c1hex}"></span>${escapeHTML(m.c1)}</span>
+            <span class="chip"><span class="dot" style="background:${c2hex}"></span>${escapeHTML(m.c2)}</span>
           </div>
         </div>
       </div>
     `;
   }).join("");
+}
+
+function renderColors(){
+  const g = groupSelect.value;
+  const gen = genSelect.value;
+  const q = colorSearch.value.trim();
+
+  let rows = (g === "all") ? ALL_MEMBERS : ALL_MEMBERS.filter(m => m.group === g);
+  if (gen !== "all") rows = rows.filter(m => m.gen === gen);
+  if (q) rows = rows.filter(m => memberMatches(m, q));
+
+  rows.sort((a,b) => {
+    const ga = a.group.localeCompare(b.group);
+    if (ga) return ga;
+    const ge = a.gen.localeCompare(b.gen, "ja");
+    if (ge) return ge;
+    return a.name.localeCompare(b.name, "ja");
+  });
+
+  countPill.textContent = `${rows.length}件`;
+
+  tbody.innerHTML = rows.map(m => {
+    const key = favKey(m);
+    const on = isFav(key);
+    const c1hex = colorToHex(m.c1);
+    const c2hex = colorToHex(m.c2);
+
+    const akaLine = m.aka ? `愛称：${escapeHTML(m.aka)}` : "";
+
+    return `
+      <tr data-key="${escapeHTML(key)}">
+        <td class="colFav">
+          <button class="starBtn ${on ? "is-on" : ""}" type="button" data-action="fav">
+            ${on ? "★" : "☆"}
+          </button>
+        </td>
+        <td>${groupLabel(m.group)}</td>
+        <td>${escapeHTML(m.gen)}</td>
+        <td>
+          <div style="display:flex; flex-direction:column; gap:2px;">
+            <span style="font-weight:800;">${escapeHTML(m.name)}</span>
+            <span class="small muted">${akaLine}</span>
+          </div>
+        </td>
+        <td>
+          <div class="colorChips">
+            <span class="chip"><span class="dot" style="background:${c1hex}"></span>${escapeHTML(m.c1)}</span>
+            <span class="chip"><span class="dot" style="background:${c2hex}"></span>${escapeHTML(m.c2)}</span>
+          </div>
+        </td>
+      </tr>
+    `;
+  }).join("");
+
+  renderFavs();
 }
 
 tbody.addEventListener("click", (e) => {
@@ -438,26 +333,37 @@ groupSelect.addEventListener("change", () => {
   buildGenOptions(groupSelect.value);
   genSelect.value = "all";
   renderColors();
-  history.replaceState(null, "", setURLFromState("colors"));
+  history.replaceState(null, "", makeShareURL());
 });
 genSelect.addEventListener("change", () => {
   renderColors();
-  history.replaceState(null, "", setURLFromState("colors"));
+  history.replaceState(null, "", makeShareURL());
 });
 colorSearch.addEventListener("input", () => {
   renderColors();
-  history.replaceState(null, "", setURLFromState("colors"));
+  history.replaceState(null, "", makeShareURL());
 });
+
 $("#resetFilterBtn").addEventListener("click", () => {
   groupSelect.value = "nogi";
   buildGenOptions("nogi");
   genSelect.value = "all";
   colorSearch.value = "";
   renderColors();
-  history.replaceState(null, "", setURLFromState("colors"));
+  history.replaceState(null, "", makeShareURL());
 });
+
+function makeShareURL(){
+  const url = new URL(location.href);
+  url.searchParams.set("g", groupSelect.value);
+  url.searchParams.set("gen", genSelect.value);
+  const q = colorSearch.value.trim();
+  if (q) url.searchParams.set("q", q); else url.searchParams.delete("q");
+  return url.toString();
+}
+
 $("#copyShareBtn").addEventListener("click", async () => {
-  const url = setURLFromState("colors");
+  const url = makeShareURL();
   try{
     await navigator.clipboard.writeText(url);
     alert("条件URLをコピーしました！");
@@ -475,6 +381,7 @@ const noteVenue = $("#noteVenue");
 const noteType = $("#noteType");
 const noteText = $("#noteText");
 const noteTags = $("#noteTags");
+
 const notesList = $("#notesList");
 const notesCount = $("#notesCount");
 const notesSearch = $("#notesSearch");
@@ -482,7 +389,6 @@ const notesFilterGroup = $("#notesFilterGroup");
 
 function loadNotes(){ return loadLS(STORE.notes, []); }
 function saveNotes(notes){ saveLS(STORE.notes, notes); }
-function newId(){ return Math.random().toString(16).slice(2) + Date.now().toString(16); }
 
 function parseTags(str){
   const raw = (str || "").trim();
@@ -794,19 +700,17 @@ $("#wipeAllBtn").addEventListener("click", () => {
 });
 
 /* =========================
-   Init from URL
+   Init
 ========================= */
 function initFromURL(){
-  const url = new URL(location.href);
-
   // theme
   applyTheme(loadLS(STORE.theme, "dark"));
 
-  // default tab: colors
-  const tab = url.searchParams.get("tab") || "colors";
-  const safeTab = ["colors","notes","checklist","links"].includes(tab) ? tab : "colors";
+  // notes date
+  $("#noteDate").value = nowDateISO();
 
-  // filters
+  // colors from URL
+  const url = new URL(location.href);
   const g = url.searchParams.get("g");
   const gen = url.searchParams.get("gen");
   const q = url.searchParams.get("q");
@@ -820,21 +724,9 @@ function initFromURL(){
   }
   if (q) colorSearch.value = q;
 
-  // render
-  renderColors();
-
-  // notes defaults
-  $("#noteDate").value = nowDateISO();
   renderNotes();
-
-  // checklist
   renderChecklist();
-
-  // apply tab
-  setTab(safeTab);
+  renderColors();
 }
 
-/* =========================
-   Boot
-========================= */
 initFromURL();
