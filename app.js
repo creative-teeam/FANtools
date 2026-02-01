@@ -1,22 +1,17 @@
-/* 坂道ツール (GitHub Pages / static)
-   - no external libs
-   - no network calls
-   - stores only in localStorage
-*/
-
 "use strict";
 
 /* =========================
    Storage Keys
 ========================= */
 const STORE = {
-  theme: "sakamichi_theme_v1",
-  notes: "sakamichi_notes_v1",
-  checklist: "sakamichi_checklist_v1",
+  theme: "sakamichi_theme_v2",
+  notes: "sakamichi_notes_v2",
+  checklist: "sakamichi_checklist_v2",
+  favorites: "sakamichi_favorites_v2",
 };
 
 /* =========================
-   Utilities
+   Helpers
 ========================= */
 const $ = (sel) => document.querySelector(sel);
 const $$ = (sel) => Array.from(document.querySelectorAll(sel));
@@ -27,10 +22,7 @@ const nowDateISO = () => {
   return new Date(d - tz).toISOString().slice(0, 10);
 };
 
-const safeJSONParse = (str, fallback) => {
-  try { return JSON.parse(str); } catch { return fallback; }
-};
-
+const safeJSONParse = (str, fallback) => { try { return JSON.parse(str); } catch { return fallback; } };
 const saveLS = (key, value) => localStorage.setItem(key, JSON.stringify(value));
 const loadLS = (key, fallback) => {
   const raw = localStorage.getItem(key);
@@ -42,10 +34,8 @@ const normalizeJP = (s) => (s || "")
   .toString()
   .trim()
   .toLowerCase()
-  // 全角英数→半角っぽく（簡易）
   .replace(/[Ａ-Ｚａ-ｚ０-９]/g, (ch) => String.fromCharCode(ch.charCodeAt(0) - 0xFEE0));
 
-/* かな/カナ揺れ軽減（最低限） */
 const kataToHira = (s) => (s || "").replace(/[\u30a1-\u30f6]/g, (ch) =>
   String.fromCharCode(ch.charCodeAt(0) - 0x60)
 );
@@ -65,71 +55,47 @@ const typeLabel = (t) => ({
   other: "その他",
 }[t] || t);
 
+function escapeHTML(s){
+  return (s || "").replace(/[&<>"']/g, (ch) => ({
+    "&":"&amp;", "<":"&lt;", ">":"&gt;", "\"":"&quot;", "'":"&#39;"
+  }[ch]));
+}
+
 /* =========================
-   Color Map (name -> hex)
-   ※見やすさ目的の近似色。公式の色味は会場/ペンライトに準拠。
+   Color Map (name -> hex) 近似
 ========================= */
 const COLOR_HEX = {
-  "ホワイト": "#ffffff",
-  "白": "#ffffff",
-
-  "ブルー": "#2563eb",
-  "青": "#2563eb",
-
-  "水色": "#38bdf8",
-  "パステルブルー": "#7dd3fc",
-
+  "ホワイト": "#ffffff", "白": "#ffffff",
+  "ブルー": "#2563eb", "青": "#2563eb",
+  "水色": "#38bdf8", "パステルブルー": "#7dd3fc",
   "エメラルドグリーン": "#10b981",
-  "グリーン": "#22c55e",
-  "緑": "#22c55e",
-  "ライトグリーン": "#84cc16",
-  "黄緑": "#84cc16",
-
+  "グリーン": "#22c55e", "緑": "#22c55e",
+  "ライトグリーン": "#84cc16", "黄緑": "#84cc16",
   "パールグリーン": "#34d399",
-
-  "イエロー": "#fbbf24",
-  "黄色": "#fbbf24",
-
+  "イエロー": "#fbbf24", "黄色": "#fbbf24",
   "オレンジ": "#fb923c",
-  "ピンク": "#f472b6",
-  "サクラピンク": "#fb7185",
-  "パッションピンク": "#ec4899",
-
-  "レッド": "#ef4444",
-  "赤": "#ef4444",
-
-  "パープル": "#a855f7",
-  "紫": "#a855f7",
+  "ピンク": "#f472b6", "サクラピンク": "#fb7185", "パッションピンク": "#ec4899",
+  "レッド": "#ef4444", "赤": "#ef4444",
+  "パープル": "#a855f7", "紫": "#a855f7",
   "バイオレット": "#7c3aed",
   "ターコイズ": "#14b8a6",
-
-  // 一部サイト表記
-  "黒": "#111827",
-  "消灯": "#111827",
-  "クラップ": "#111827",
-  "※虹色": "#111827",
-  "虹色": "#111827",
+  "黒": "#111827", "消灯": "#111827", "虹色": "#111827",
 };
-
 const colorToHex = (name) => COLOR_HEX[name] || "#94a3b8";
 
 /* =========================
-   Member Color Data
-   参照元（更新日含む）：
-   - 乃木坂46: NogiSnap（2026/1時点 在籍メンバー）等
-   - 櫻坂46: 櫻坂46⊿応援ブログ / 公式NEWS（三期・四期）
-   - 日向坂46: 日向坂46まとめ（2026.01.17）
+   ✅ Member Data
+   ※ここは「前に渡したデータ」をそのまま入れる場所です
+   省略せず全文が必要なので、前回と同じデータを入れてあります。
 ========================= */
 
-/* 乃木坂46（現役として記載されているメンバー） */
+/* --- 乃木坂46 --- */
 const NOGI = [
-  // 3期
   { group:"nogi", gen:"3期", name:"伊藤理々杏", aka:"りりあ", kana:"いとうりりあ", c1:"紫", c2:"赤" },
   { group:"nogi", gen:"3期", name:"岩本蓮加", aka:"れんたん", kana:"いわもとれんか", c1:"赤", c2:"ピンク" },
   { group:"nogi", gen:"3期", name:"梅澤美波", aka:"みなみん", kana:"うめざわみなみ", c1:"青", c2:"水色" },
   { group:"nogi", gen:"3期", name:"吉田綾乃クリスティー", aka:"あやてぃー", kana:"よしだあやのくりすてぃー", c1:"ピンク", c2:"紫" },
 
-  // 4期
   { group:"nogi", gen:"4期", name:"遠藤さくら", aka:"さくちゃん", kana:"えんどうさくら", c1:"ピンク", c2:"白" },
   { group:"nogi", gen:"4期", name:"賀喜遥香", aka:"かっきー", kana:"かきはるか", c1:"オレンジ", c2:"緑" },
   { group:"nogi", gen:"4期", name:"金川紗耶", aka:"やんちゃん", kana:"かながわさや", c1:"水色", c2:"赤" },
@@ -141,7 +107,6 @@ const NOGI = [
   { group:"nogi", gen:"4期", name:"林瑠奈", aka:"はやし", kana:"はやしるな", c1:"ピンク", c2:"ピンク" },
   { group:"nogi", gen:"4期", name:"弓木奈於", aka:"ゆみっきー", kana:"ゆみきなお", c1:"赤", c2:"黄緑" },
 
-  // 5期
   { group:"nogi", gen:"5期", name:"五百城茉央", aka:"まおちゃん", kana:"いおきまお", c1:"ターコイズ", c2:"青" },
   { group:"nogi", gen:"5期", name:"池田瑛紗", aka:"てれぱん", kana:"いけだてれさ", c1:"緑", c2:"白" },
   { group:"nogi", gen:"5期", name:"一ノ瀬美空", aka:"みーきゅん", kana:"いちのせみく", c1:"水色", c2:"水色" },
@@ -154,7 +119,6 @@ const NOGI = [
   { group:"nogi", gen:"5期", name:"冨里奈央", aka:"なおちゃん", kana:"とみさとなお", c1:"ターコイズ", c2:"ターコイズ" },
   { group:"nogi", gen:"5期", name:"中西アルノ", aka:"あるの", kana:"なかにしあるの", c1:"水色", c2:"ターコイズ" },
 
-  // 6期
   { group:"nogi", gen:"6期", name:"愛宕心響", aka:"ここねん", kana:"あたごここね", c1:"ピンク", c2:"青" },
   { group:"nogi", gen:"6期", name:"大越ひなの", aka:"ひなの", kana:"おおこしひなの", c1:"白", c2:"黄色" },
   { group:"nogi", gen:"6期", name:"小津玲奈", aka:"おづちゃん", kana:"おづれいな", c1:"紫", c2:"ターコイズ" },
@@ -168,9 +132,8 @@ const NOGI = [
   { group:"nogi", gen:"6期", name:"矢田萌華", aka:"やだちゃん", kana:"やだもえか", c1:"白", c2:"紫" },
 ];
 
-/* 櫻坂46 */
+/* --- 櫻坂46 --- */
 const SAKURA = [
-  // 二期（色番号表記→色名はそのまま扱う）
   { group:"sakura", gen:"2期", name:"井上梨名", aka:"", kana:"いのうえりな", c1:"ブルー", c2:"ブルー" },
   { group:"sakura", gen:"2期", name:"遠藤光莉", aka:"", kana:"えんどうひかり", c1:"パープル", c2:"パープル" },
   { group:"sakura", gen:"2期", name:"大園玲", aka:"", kana:"おおぞのれい", c1:"バイオレット", c2:"バイオレット" },
@@ -185,7 +148,6 @@ const SAKURA = [
   { group:"sakura", gen:"2期", name:"守屋麗奈", aka:"", kana:"もりやれな", c1:"イエロー", c2:"ピンク" },
   { group:"sakura", gen:"2期", name:"山﨑天", aka:"てん", kana:"やまさきてん", c1:"ホワイト", c2:"グリーン" },
 
-  // 三期
   { group:"sakura", gen:"3期", name:"石森璃花", aka:"", kana:"いしもりりか", c1:"グリーン", c2:"ピンク" },
   { group:"sakura", gen:"3期", name:"遠藤理子", aka:"", kana:"えんどうりこ", c1:"サクラピンク", c2:"バイオレット" },
   { group:"sakura", gen:"3期", name:"小田倉麗奈", aka:"", kana:"おだくられいな", c1:"ホワイト", c2:"パッションピンク" },
@@ -198,7 +160,6 @@ const SAKURA = [
   { group:"sakura", gen:"3期", name:"村山美羽", aka:"", kana:"むらやまみう", c1:"パープル", c2:"バイオレット" },
   { group:"sakura", gen:"3期", name:"山下瞳月", aka:"", kana:"やましたしづき", c1:"レッド", c2:"パステルブルー" },
 
-  // 四期
   { group:"sakura", gen:"4期", name:"浅井恋乃未", aka:"", kana:"あさいこのみ", c1:"レッド", c2:"エメラルドグリーン" },
   { group:"sakura", gen:"4期", name:"稲熊ひな", aka:"", kana:"いなぐまひな", c1:"エメラルドグリーン", c2:"オレンジ" },
   { group:"sakura", gen:"4期", name:"勝又春", aka:"", kana:"かつまたはる", c1:"サクラピンク", c2:"レッド" },
@@ -210,21 +171,18 @@ const SAKURA = [
   { group:"sakura", gen:"4期", name:"山田桃実", aka:"", kana:"やまだももみ", c1:"パステルブルー", c2:"バイオレット" },
 ];
 
-/* 日向坂46 */
+/* --- 日向坂46 --- */
 const HINATA = [
-  // 二期
   { group:"hinata", gen:"2期", name:"金村美玖", aka:"", kana:"かねむらみく", c1:"パステルブルー", c2:"イエロー" },
   { group:"hinata", gen:"2期", name:"河田陽菜", aka:"", kana:"かわたひな", c1:"イエロー", c2:"サクラピンク" },
   { group:"hinata", gen:"2期", name:"小坂菜緒", aka:"こさかな", kana:"こさかなお", c1:"ホワイト", c2:"バイオレット" },
   { group:"hinata", gen:"2期", name:"松田好花", aka:"このか", kana:"まつだこのか", c1:"パールグリーン", c2:"サクラピンク" },
 
-  // 三期
   { group:"hinata", gen:"3期", name:"上村ひなの", aka:"", kana:"かみむらひなの", c1:"エメラルドグリーン", c2:"レッド" },
   { group:"hinata", gen:"3期", name:"髙橋未来虹", aka:"", kana:"たかはしみくに", c1:"グリーン", c2:"パープル" },
   { group:"hinata", gen:"3期", name:"森本茉莉", aka:"", kana:"もりもとまり", c1:"オレンジ", c2:"ブルー" },
   { group:"hinata", gen:"3期", name:"山口陽世", aka:"", kana:"やまぐちはるよ", c1:"パールグリーン", c2:"イエロー" },
 
-  // 四期
   { group:"hinata", gen:"4期", name:"石塚瑶季", aka:"", kana:"いしづかたまき", c1:"サクラピンク", c2:"オレンジ" },
   { group:"hinata", gen:"4期", name:"小西夏菜実", aka:"", kana:"こにしななみ", c1:"パープル", c2:"ブルー" },
   { group:"hinata", gen:"4期", name:"清水理央", aka:"", kana:"しみずりお", c1:"パステルブルー", c2:"ピンク" },
@@ -237,7 +195,6 @@ const HINATA = [
   { group:"hinata", gen:"4期", name:"山下葉留花", aka:"", kana:"やましたはるか", c1:"ホワイト", c2:"エメラルドグリーン" },
   { group:"hinata", gen:"4期", name:"渡辺莉奈", aka:"", kana:"わたなべりな", c1:"ブルー", c2:"ホワイト" },
 
-  // 五期
   { group:"hinata", gen:"5期", name:"大田美月", aka:"", kana:"おおたみづき", c1:"サクラピンク", c2:"ピンク" },
   { group:"hinata", gen:"5期", name:"大野愛実", aka:"", kana:"おおのまなみ", c1:"レッド", c2:"レッド" },
   { group:"hinata", gen:"5期", name:"片山紗希", aka:"", kana:"かたやまさき", c1:"パステルブルー", c2:"パステルブルー" },
@@ -266,15 +223,13 @@ const panels = {
 function setTab(name){
   tabs.forEach(t => t.classList.toggle("is-active", t.dataset.tab === name));
   Object.entries(panels).forEach(([k, el]) => el.classList.toggle("is-active", k === name));
-  history.replaceState(null, "", setHashFromState(name));
+  history.replaceState(null, "", setURLFromState(name));
 }
+tabs.forEach(btn => btn.addEventListener("click", () => setTab(btn.dataset.tab)));
 
-function setHashFromState(activeTab){
+function setURLFromState(activeTab){
   const url = new URL(location.href);
-  url.hash = "";
   url.searchParams.set("tab", activeTab);
-
-  // keep current filters (colors tab)
   if (activeTab === "colors"){
     url.searchParams.set("g", $("#groupSelect").value);
     url.searchParams.set("gen", $("#genSelect").value);
@@ -283,10 +238,6 @@ function setHashFromState(activeTab){
   }
   return url.toString();
 }
-
-tabs.forEach(btn => {
-  btn.addEventListener("click", () => setTab(btn.dataset.tab));
-});
 
 /* =========================
    Theme
@@ -302,6 +253,34 @@ $("#themeBtn").addEventListener("click", () => {
 });
 
 /* =========================
+   Favorites
+========================= */
+function favKey(m){
+  // group|name|gen で一意っぽくする（IDがない想定）
+  return `${m.group}|${m.gen}|${m.name}`;
+}
+function loadFavs(){
+  return loadLS(STORE.favorites, []);
+}
+function saveFavs(arr){
+  saveLS(STORE.favorites, arr);
+}
+function isFav(key){
+  const favs = loadFavs();
+  return favs.includes(key);
+}
+function toggleFav(key){
+  const favs = loadFavs();
+  const idx = favs.indexOf(key);
+  if (idx >= 0) favs.splice(idx, 1);
+  else favs.unshift(key);
+  saveFavs(favs);
+}
+function clearFavs(){
+  saveFavs([]);
+}
+
+/* =========================
    Colors UI
 ========================= */
 const groupSelect = $("#groupSelect");
@@ -309,6 +288,9 @@ const genSelect = $("#genSelect");
 const colorSearch = $("#colorSearch");
 const tbody = $("#colorsTbody");
 const countPill = $("#countPill");
+const favList = $("#favList");
+const favPill = $("#favPill");
+const favGroup = $("#favGroup");
 
 function buildGenOptions(group){
   const items = (group === "all") ? ALL_MEMBERS : ALL_MEMBERS.filter(m => m.group === group);
@@ -332,7 +314,6 @@ function renderColors(){
   if (gen !== "all") rows = rows.filter(m => m.gen === gen);
   if (q) rows = rows.filter(m => memberMatches(m, q));
 
-  // sort: group -> gen -> name
   rows.sort((a,b) => {
     const ga = a.group.localeCompare(b.group);
     if (ga) return ga;
@@ -344,6 +325,8 @@ function renderColors(){
   countPill.textContent = `${rows.length}件`;
 
   tbody.innerHTML = rows.map(m => {
+    const key = favKey(m);
+    const on = isFav(key);
     const c1hex = colorToHex(m.c1);
     const c2hex = colorToHex(m.c2);
 
@@ -354,53 +337,130 @@ function renderColors(){
       </div>
     `;
 
+    const akaLine = m.aka ? `愛称：${escapeHTML(m.aka)}` : "";
+
     return `
-      <tr>
+      <tr data-key="${escapeHTML(key)}">
+        <td class="colFav">
+          <button class="starBtn ${on ? "is-on" : ""}" type="button" data-action="fav">
+            ${on ? "★" : "☆"}
+          </button>
+        </td>
         <td>${groupLabel(m.group)}</td>
-        <td>${m.gen}</td>
+        <td>${escapeHTML(m.gen)}</td>
         <td>
           <div style="display:flex; flex-direction:column; gap:2px;">
-            <span style="font-weight:700;">${m.name}</span>
-            <span class="small muted">${m.aka ? `愛称：${m.aka}` : ""}</span>
+            <span style="font-weight:800;">${escapeHTML(m.name)}</span>
+            <span class="small muted">${akaLine}</span>
           </div>
         </td>
         <td>${chips}</td>
       </tr>
     `;
   }).join("");
+
+  renderFavs();
 }
+
+function renderFavs(){
+  const favs = loadFavs();
+  const g = favGroup.value;
+
+  const map = new Map();
+  ALL_MEMBERS.forEach(m => map.set(favKey(m), m));
+
+  const items = favs
+    .map(k => map.get(k))
+    .filter(Boolean)
+    .filter(m => (g === "all") ? true : m.group === g);
+
+  favPill.textContent = `${items.length}人`;
+
+  if (items.length === 0){
+    favList.innerHTML = `<div class="small muted">★を押すとここに出ます。</div>`;
+    return;
+  }
+
+  favList.innerHTML = items.map(m => {
+    const c1hex = colorToHex(m.c1);
+    const c2hex = colorToHex(m.c2);
+    return `
+      <div class="favItem">
+        <div class="favTop">
+          <div>
+            <div class="favName">${escapeHTML(m.name)}</div>
+            <div class="favMeta">${groupLabel(m.group)} / ${escapeHTML(m.gen)} ${m.aka ? ` / ${escapeHTML(m.aka)}` : ""}</div>
+          </div>
+          <button class="starBtn is-on" type="button" data-action="fav" data-key="${escapeHTML(favKey(m))}">★</button>
+        </div>
+        <div class="favChips">
+          <div class="colorChips">
+            <span class="chip"><span class="dot" style="background:${c1hex}"></span>${m.c1}</span>
+            <span class="chip"><span class="dot" style="background:${c2hex}"></span>${m.c2}</span>
+          </div>
+        </div>
+      </div>
+    `;
+  }).join("");
+}
+
+tbody.addEventListener("click", (e) => {
+  const btn = e.target.closest("button");
+  if (!btn) return;
+  if (btn.dataset.action !== "fav") return;
+  const tr = e.target.closest("tr");
+  const key = tr?.dataset.key;
+  if (!key) return;
+  toggleFav(key);
+  renderColors();
+});
+
+favList.addEventListener("click", (e) => {
+  const btn = e.target.closest("button");
+  if (!btn) return;
+  if (btn.dataset.action !== "fav") return;
+  const key = btn.dataset.key;
+  if (!key) return;
+  toggleFav(key);
+  renderColors();
+});
+
+favGroup.addEventListener("change", renderFavs);
+
+$("#clearFavBtn").addEventListener("click", () => {
+  const ok = confirm("お気に入りを全解除しますか？");
+  if (!ok) return;
+  clearFavs();
+  renderColors();
+});
 
 groupSelect.addEventListener("change", () => {
   buildGenOptions(groupSelect.value);
   genSelect.value = "all";
   renderColors();
-  history.replaceState(null, "", setHashFromState("colors"));
+  history.replaceState(null, "", setURLFromState("colors"));
 });
-
 genSelect.addEventListener("change", () => {
   renderColors();
-  history.replaceState(null, "", setHashFromState("colors"));
+  history.replaceState(null, "", setURLFromState("colors"));
 });
-
 colorSearch.addEventListener("input", () => {
   renderColors();
-  history.replaceState(null, "", setHashFromState("colors"));
+  history.replaceState(null, "", setURLFromState("colors"));
 });
-
 $("#resetFilterBtn").addEventListener("click", () => {
   groupSelect.value = "nogi";
   buildGenOptions("nogi");
   genSelect.value = "all";
   colorSearch.value = "";
   renderColors();
-  history.replaceState(null, "", setHashFromState("colors"));
+  history.replaceState(null, "", setURLFromState("colors"));
 });
-
 $("#copyShareBtn").addEventListener("click", async () => {
-  const url = setHashFromState("colors");
+  const url = setURLFromState("colors");
   try{
     await navigator.clipboard.writeText(url);
-    alert("URLをコピーしました！");
+    alert("条件URLをコピーしました！");
   }catch{
     prompt("コピーできない場合はこのURLを手動でコピーしてください:", url);
   }
@@ -420,20 +480,13 @@ const notesCount = $("#notesCount");
 const notesSearch = $("#notesSearch");
 const notesFilterGroup = $("#notesFilterGroup");
 
-function loadNotes(){
-  return loadLS(STORE.notes, []);
-}
-function saveNotes(notes){
-  saveLS(STORE.notes, notes);
-}
-function newId(){
-  return Math.random().toString(16).slice(2) + Date.now().toString(16);
-}
+function loadNotes(){ return loadLS(STORE.notes, []); }
+function saveNotes(notes){ saveLS(STORE.notes, notes); }
+function newId(){ return Math.random().toString(16).slice(2) + Date.now().toString(16); }
 
 function parseTags(str){
   const raw = (str || "").trim();
   if (!raw) return [];
-  // space separated, allow "#"
   return raw.split(/\s+/).map(t => t.trim()).filter(Boolean);
 }
 
@@ -452,9 +505,7 @@ function renderNotes(){
     });
   }
 
-  // newest first
   rows.sort((a,b) => (b.date || "").localeCompare(a.date || "") || (b.createdAt||0)-(a.createdAt||0));
-
   notesCount.textContent = `${notes.length}件`;
 
   if (rows.length === 0){
@@ -463,19 +514,14 @@ function renderNotes(){
   }
 
   notesList.innerHTML = rows.map(n => {
-    const tags = (n.tags||[]).map(t => `<span class="badge">${t}</span>`).join(" ");
-    const meta = `
-      <div class="noteMeta">
-        <span class="badge">${groupLabel(n.group)}</span>
-        <span class="badge">${typeLabel(n.type)}</span>
-        ${n.date ? `<span class="badge">${n.date}</span>` : ""}
-        ${n.venue ? `<span class="badge">${escapeHTML(n.venue)}</span>` : ""}
-      </div>
-    `;
+    const tags = (n.tags||[]).map(t => `<span class="badge">${escapeHTML(t)}</span>`).join(" ");
     return `
-      <div class="noteItem" data-id="${n.id}">
-        <div class="noteTop">
-          ${meta}
+      <div class="noteItem" data-id="${escapeHTML(n.id)}">
+        <div class="noteMeta">
+          <span class="badge">${groupLabel(n.group)}</span>
+          <span class="badge">${typeLabel(n.type)}</span>
+          ${n.date ? `<span class="badge">${escapeHTML(n.date)}</span>` : ""}
+          ${n.venue ? `<span class="badge">${escapeHTML(n.venue)}</span>` : ""}
         </div>
         <p class="noteText">${escapeHTML(n.text || "")}</p>
         <div class="noteActions">
@@ -489,19 +535,10 @@ function renderNotes(){
   }).join("");
 }
 
-function escapeHTML(s){
-  return (s || "").replace(/[&<>"']/g, (ch) => ({
-    "&":"&amp;", "<":"&lt;", ">":"&gt;", "\"":"&quot;", "'":"&#39;"
-  }[ch]));
-}
-
 $("#saveNoteBtn").addEventListener("click", () => {
   const text = (noteText.value || "").trim();
-  if (!text){
-    alert("メモ本文が空です。");
-    return;
-  }
-  // simple safety reminder
+  if (!text){ alert("メモ本文が空です。"); return; }
+
   if (/(住所|電話|tel|メール|mail|@|instagram|twitter|x\.com|line|学校|本名)/i.test(text)){
     const ok = confirm("個人情報が含まれていそうです。保存しますか？（推奨：保存しない）");
     if (!ok) return;
@@ -519,6 +556,7 @@ $("#saveNoteBtn").addEventListener("click", () => {
     createdAt: Date.now(),
   });
   saveNotes(notes);
+
   noteText.value = "";
   noteTags.value = "";
   noteVenue.value = "";
@@ -582,7 +620,6 @@ $("#clearAllNotesBtn").addEventListener("click", () => {
   renderNotes();
 });
 
-/* Export / Import */
 $("#exportNotesBtn").addEventListener("click", () => {
   const data = loadNotes();
   const blob = new Blob([JSON.stringify({version:1, exportedAt: new Date().toISOString(), notes:data}, null, 2)], {type:"application/json"});
@@ -603,6 +640,7 @@ $("#importNotesInput").addEventListener("change", async (e) => {
     const text = await file.text();
     const obj = JSON.parse(text);
     if (!obj || !Array.isArray(obj.notes)) throw new Error("Invalid JSON");
+
     const ok = confirm("このJSONをインポートしますか？（上書きではなく追加）\n※他人のJSONは読み込まないでください。");
     if (!ok) return;
 
@@ -621,7 +659,7 @@ $("#importNotesInput").addEventListener("change", async (e) => {
     saveNotes(merged);
     renderNotes();
     alert("インポートしました。");
-  }catch(err){
+  }catch{
     alert("読み込みに失敗しました。JSON形式を確認してください。");
   }finally{
     e.target.value = "";
@@ -650,12 +688,8 @@ const TEMPLATE = [
   "待ち時間対策（軽食/充電）",
 ];
 
-function loadChecklistAll(){
-  return loadLS(STORE.checklist, {});
-}
-function saveChecklistAll(obj){
-  saveLS(STORE.checklist, obj);
-}
+function loadChecklistAll(){ return loadLS(STORE.checklist, {}); }
+function saveChecklistAll(obj){ saveLS(STORE.checklist, obj); }
 
 function getChecklist(group){
   const all = loadChecklistAll();
@@ -665,13 +699,11 @@ function getChecklist(group){
   }
   return all[group];
 }
-
 function setChecklist(group, items){
   const all = loadChecklistAll();
   all[group] = items;
   saveChecklistAll(all);
 }
-
 function renderChecklist(){
   const g = checkGroup.value;
   const items = getChecklist(g);
@@ -679,7 +711,7 @@ function renderChecklist(){
   checkProgress.textContent = `${done}/${items.length}`;
 
   checkList.innerHTML = items.map(i => `
-    <div class="checkItem" data-id="${i.id}">
+    <div class="checkItem" data-id="${escapeHTML(i.id)}">
       <div class="checkLeft">
         <input type="checkbox" ${i.done ? "checked" : ""} aria-label="チェック" />
         <div class="checkText">${escapeHTML(i.text)}</div>
@@ -755,7 +787,7 @@ $("#clearChecklistBtn").addEventListener("click", () => {
    Wipe All
 ========================= */
 $("#wipeAllBtn").addEventListener("click", () => {
-  const ok = confirm("全データ（メモ/チェック/テーマ）を初期化します。よろしいですか？");
+  const ok = confirm("全データ（メモ/チェック/テーマ/お気に入り）を初期化します。よろしいですか？");
   if (!ok) return;
   Object.values(STORE).forEach(k => localStorage.removeItem(k));
   location.reload();
@@ -766,32 +798,33 @@ $("#wipeAllBtn").addEventListener("click", () => {
 ========================= */
 function initFromURL(){
   const url = new URL(location.href);
-  const tab = url.searchParams.get("tab") || "colors";
-  const g = url.searchParams.get("g");
-  const gen = url.searchParams.get("gen");
-  const q = url.searchParams.get("q");
 
   // theme
   applyTheme(loadLS(STORE.theme, "dark"));
 
-  // tabs
+  // default tab: colors
+  const tab = url.searchParams.get("tab") || "colors";
   const safeTab = ["colors","notes","checklist","links"].includes(tab) ? tab : "colors";
 
-  // colors filters
+  // filters
+  const g = url.searchParams.get("g");
+  const gen = url.searchParams.get("gen");
+  const q = url.searchParams.get("q");
+
   if (g && ["nogi","sakura","hinata","all"].includes(g)) groupSelect.value = g;
   buildGenOptions(groupSelect.value);
 
   if (gen){
-    // if gen exists in options
     const opt = Array.from(genSelect.options).some(o => o.value === gen);
     if (opt) genSelect.value = gen;
   }
   if (q) colorSearch.value = q;
 
+  // render
   renderColors();
 
   // notes defaults
-  noteDate.value = nowDateISO();
+  $("#noteDate").value = nowDateISO();
   renderNotes();
 
   // checklist
