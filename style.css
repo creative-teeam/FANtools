@@ -14,7 +14,6 @@
   --accent3: #7dd3fc; /* 水色 */
 
   --danger: #fb7185;
-  --ok: #34d399;
 
   --sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue",
           Arial, "Noto Sans JP", "Hiragino Kaku Gothic ProN", Meiryo, sans-serif;
@@ -33,40 +32,32 @@ html[data-theme="light"]{
 
 *{ box-sizing:border-box; }
 html,body{ height:100%; }
-
 body{
   margin:0;
   font-family: var(--sans);
   color: var(--text);
 
-  /* ✅ 背景：紫・桜色・水色をはっきり */
+  /* ✅ 背景：紫 → 桜色 → 水色（順番を意識して出る位置も固定） */
   background:
-    radial-gradient(900px 600px at 10% 0%, rgba(168,85,247,0.45), transparent 70%),
-    radial-gradient(900px 700px at 90% 10%, rgba(251,113,133,0.40), transparent 70%),
-    radial-gradient(1000px 700px at 50% 100%, rgba(125,211,252,0.45), transparent 70%),
+    radial-gradient(1000px 700px at 18% -8%, rgba(168,85,247,0.52), transparent 68%),  /* 紫：上左 */
+    radial-gradient(900px 650px at 92% 6%, rgba(251,113,133,0.44), transparent 70%),   /* 桜：上右 */
+    radial-gradient(1150px 800px at 55% 110%, rgba(125,211,252,0.52), transparent 66%),/* 水色：下中央 */
     linear-gradient(180deg, #0b0c16 0%, #0a0b12 100%);
 }
 
 a{ color: inherit; }
 button, input, select, textarea{ font: inherit; color: inherit; }
-:focus-visible{
-  outline:none;
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent3) 25%, transparent);
-  border-radius: 12px;
-}
+:focus-visible{ outline:none; box-shadow: 0 0 0 3px rgba(125,211,252,.25); border-radius: 12px; }
 
-/* =========================
-   Topbar / Notice / Tabs
-========================= */
+/* Topbar */
 .topbar{
   position: sticky;
   top:0;
   z-index: 20;
   backdrop-filter: blur(10px);
-  background: color-mix(in srgb, var(--bg) 78%, transparent);
+  background: rgba(10,11,18,.72);
   border-bottom: 1px solid var(--line);
 }
-
 .topbar__inner{
   max-width: 1220px;
   margin: 0 auto;
@@ -83,7 +74,6 @@ button, input, select, textarea{ font: inherit; color: inherit; }
   align-items:center;
   min-width: 0;
 }
-
 .brand__logo{
   width: 44px;
   height: 44px;
@@ -92,29 +82,16 @@ button, input, select, textarea{ font: inherit; color: inherit; }
   place-items:center;
   font-weight: 900;
   border: 1px solid var(--line);
-  background: linear-gradient(135deg,
-    color-mix(in srgb, var(--accent1) 30%, transparent),
-    color-mix(in srgb, var(--accent2) 24%, transparent),
-    color-mix(in srgb, var(--accent3) 24%, transparent)
-  );
+  background: linear-gradient(135deg, rgba(168,85,247,.25), rgba(251,113,133,.20), rgba(125,211,252,.20));
 }
-
 .brand__title{ margin:0; font-size: 18px; line-height:1.1; }
-.brand__sub{
-  margin: 4px 0 0;
-  font-size: 12px;
-  color: var(--muted);
-  white-space: nowrap;
-  overflow:hidden;
-  text-overflow: ellipsis;
-}
+.brand__sub{ margin: 4px 0 0; font-size: 12px; color: var(--muted); white-space: nowrap; overflow:hidden; text-overflow: ellipsis; }
 
 .notice{
   border-top: 1px solid var(--line);
   border-bottom: 1px solid var(--line);
-  background: color-mix(in srgb, var(--panel) 70%, transparent);
+  background: rgba(255,255,255,.06);
 }
-
 .notice__inner{
   max-width: 1220px;
   margin:0 auto;
@@ -123,7 +100,6 @@ button, input, select, textarea{ font: inherit; color: inherit; }
   gap: 10px;
   align-items:flex-start;
 }
-
 .notice__badge{
   flex: 0 0 auto;
   font-size: 12px;
@@ -131,9 +107,8 @@ button, input, select, textarea{ font: inherit; color: inherit; }
   padding: 4px 10px;
   border-radius: 999px;
   border: 1px solid var(--line);
-  background: color-mix(in srgb, var(--card) 80%, transparent);
+  background: rgba(255,255,255,.07);
 }
-
 .notice__text{
   margin:0;
   font-size: 13px;
@@ -141,7 +116,7 @@ button, input, select, textarea{ font: inherit; color: inherit; }
   line-height: 1.6;
 }
 
-.tabs{
+.quicknav{
   max-width: 1220px;
   margin: 0 auto;
   padding: 10px 16px 14px;
@@ -149,74 +124,50 @@ button, input, select, textarea{ font: inherit; color: inherit; }
   gap: 8px;
   overflow-x: auto;
 }
-
-.tab{
+.chipLink{
   flex: 0 0 auto;
+  text-decoration: none;
   border: 1px solid var(--line);
-  background: color-mix(in srgb, var(--panel) 78%, transparent);
+  background: rgba(255,255,255,.06);
   color: var(--muted);
   padding: 10px 12px;
   border-radius: 999px;
-  cursor:pointer;
   transition: transform .08s ease, filter .12s ease, background .12s ease;
 }
+.chipLink:hover{ transform: translateY(-1px); filter: brightness(1.05); background: rgba(255,255,255,.08); }
 
-.tab:hover{ transform: translateY(-1px); filter: brightness(1.03); }
-
-.tab.is-active{
-  color: var(--text);
-  border-color: color-mix(in srgb, var(--accent3) 32%, var(--line));
-  background: linear-gradient(135deg,
-    color-mix(in srgb, var(--accent1) 18%, transparent),
-    color-mix(in srgb, var(--accent2) 14%, transparent),
-    color-mix(in srgb, var(--accent3) 14%, transparent)
-  );
-}
-
-/* =========================
-   Container / Panels
-========================= */
+/* Container */
 .container{
   max-width: 1220px;
   margin: 0 auto;
   padding: 16px;
 }
 
-/* パネルの説明文 */
-.panel__head{ margin: 10px 0 14px; }
-.panel__title{ margin:0; font-size: 20px; }
-.panel__desc{ margin: 6px 0 0; font-size: 13px; color: var(--muted); line-height: 1.6; }
+/* Sections */
+.section{
+  margin: 18px 0 26px;
+}
+.section__head{
+  margin: 10px 0 14px;
+}
+.section__title{ margin:0; font-size: 20px; }
+.section__desc{ margin: 6px 0 0; font-size: 13px; color: var(--muted); line-height: 1.6; }
+.section--bottom{
+  margin-top: 34px;
+  padding-top: 16px;
+  border-top: 1px solid var(--line);
+}
 
-/* 既存のタブ制御のまま */
-.panel{ display:none; }
-.panel.is-active{ display:block; }
-
-/* =========================
-   ✅ 要望：ノート＆チェックを上で隣同士
-   - notesタブで、チェックを同時に見せる “レイアウト” をCSSで整える
-   - （注意）JSがpanel非表示にするので、checklistパネル自体は同時表示できない。
-   - その代わり、notes内の.layout2を「上段2カラムで固定」＆横幅最適化。
-========================= */
-#tab-notes .layout2{
+/* Layouts */
+.layout2{
   display:grid;
   gap: 14px;
   grid-template-columns: 1fr;
 }
 @media (min-width: 980px){
-  #tab-notes .layout2{
-    grid-template-columns: 1fr 1fr; /* ✅ 隣同士 */
-    align-items: start;
-  }
+  .layout2{ grid-template-columns: 1fr 1fr; align-items:start; }
 }
 
-/* チェック側も「上段に近い体感」にする（カードの高さ・余白を調整） */
-#tab-notes .card{
-  min-width: 0;
-}
-
-/* =========================
-   ✅ 要望：メンバー別サイリウムカラー表示は見やすく
-========================= */
 .layout3{
   display:grid;
   gap: 14px;
@@ -225,47 +176,22 @@ button, input, select, textarea{ font: inherit; color: inherit; }
 @media (min-width: 1000px){
   .layout3{
     grid-template-columns: 320px 1fr 320px;
-    align-items: start;
+    align-items:start;
   }
 }
 
-/* 中央の一覧を広く・縦スクロールを気持ちよく */
-.card--wide{ min-width: 0; }
-
-/* サイドカード固定 */
-.card--sticky{ position: static; }
-@media (min-width: 1000px){
-  .card--sticky{
-    position: sticky;
-    top: 170px;
-  }
-}
-
-/* =========================
-   ✅ 要望：公式リンクは“下に表示”
-   - linksタブの中では、カードを下段に見えるように余白/区切りを強調
-   - （4つ同時表示はCSSだけでは不可）
-========================= */
-#tab-links{
-  margin-top: 24px; /* 下に来た印象 */
-}
-#tab-links .panel__head{
-  margin-top: 28px;
-  padding-top: 14px;
-  border-top: 1px solid var(--line);
-}
-
-/* =========================
-   Cards / Fields / Buttons
-========================= */
 .card{
-  background: color-mix(in srgb, var(--card) 78%, transparent);
+  background: rgba(255,255,255,.09);
   border: 1px solid var(--line);
   border-radius: var(--radius2);
   box-shadow: var(--shadow);
   padding: 14px;
 }
-
+.card--wide{ min-width: 0; }
+.card--sticky{ position: static; }
+@media (min-width: 1000px){
+  .card--sticky{ position: sticky; top: 170px; }
+}
 .card__head{
   display:flex;
   align-items:center;
@@ -273,30 +199,26 @@ button, input, select, textarea{ font: inherit; color: inherit; }
   gap: 10px;
   margin-bottom: 10px;
 }
-
 .card__title{ margin:0; font-size: 15px; }
 
 .card__note{
   border: 1px dashed var(--line);
   border-radius: var(--radius);
   padding: 12px;
-  background: color-mix(in srgb, var(--panel) 72%, transparent);
+  background: rgba(255,255,255,.06);
 }
-
 .card__noteTitle{ margin:0 0 8px; font-size: 13px; }
 
 .field{ margin: 10px 0; }
 .label{ display:block; font-size: 12px; color: var(--muted); margin-bottom: 6px; }
-
 .input, .select, .textarea{
   width: 100%;
   border-radius: 14px;
   border: 1px solid var(--line);
-  background: color-mix(in srgb, var(--panel) 70%, transparent);
+  background: rgba(255,255,255,.06);
   padding: 10px 12px;
 }
 .textarea{ resize: vertical; min-height: 120px; }
-
 .help{ margin: 6px 2px 0; font-size: 12px; color: var(--muted); }
 
 .row{ display:flex; align-items:center; gap: 10px; }
@@ -304,28 +226,21 @@ button, input, select, textarea{ font: inherit; color: inherit; }
 
 .btn{
   border: 1px solid var(--line);
-  background: linear-gradient(135deg,
-    color-mix(in srgb, var(--accent1) 16%, transparent),
-    color-mix(in srgb, var(--accent2) 12%, transparent),
-    color-mix(in srgb, var(--accent3) 12%, transparent)
-  );
+  background: linear-gradient(135deg, rgba(168,85,247,.18), rgba(251,113,133,.14), rgba(125,211,252,.14));
   padding: 10px 12px;
   border-radius: 14px;
   cursor:pointer;
   transition: transform .08s ease, filter .12s ease;
 }
 .btn:hover{ transform: translateY(-1px); filter: brightness(1.05); }
-
-.btn--ghost{
-  background: color-mix(in srgb, var(--panel) 78%, transparent);
-}
-
+.btn--ghost{ background: rgba(255,255,255,.06); }
 .btn--danger{
-  background: color-mix(in srgb, var(--danger) 20%, transparent);
-  border-color: color-mix(in srgb, var(--danger) 38%, var(--line));
+  background: rgba(251,113,133,.18);
+  border-color: rgba(251,113,133,.35);
 }
-
 .btn__icon{ margin-right: 6px; }
+
+.fileBtn{ display:inline-flex; align-items:center; justify-content:center; gap: 8px; }
 
 .pill{
   font-size: 12px;
@@ -333,209 +248,10 @@ button, input, select, textarea{ font: inherit; color: inherit; }
   padding: 6px 10px;
   border-radius: 999px;
   border: 1px solid var(--line);
-  background: color-mix(in srgb, var(--panel) 72%, transparent);
+  background: rgba(255,255,255,.06);
 }
 
 .divider{ height: 1px; background: var(--line); margin: 14px 0; }
-
-/* =========================
-   Tables / Color chips
-========================= */
-.tableWrap{
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-  overflow: auto;
-  background: color-mix(in srgb, var(--panel) 74%, transparent);
-}
-
-.table{
-  width: 100%;
-  border-collapse: collapse;
-  min-width: 760px;
-}
-
-.table th, .table td{
-  padding: 10px 12px;
-  border-bottom: 1px solid var(--line);
-  font-size: 13px;
-  vertical-align: middle;
-}
-
-.table th{
-  position: sticky;
-  top: 0;
-  background: color-mix(in srgb, var(--bg) 70%, transparent);
-  text-align: left;
-  color: var(--muted);
-  font-weight: 800;
-}
-
-.table tr:hover td{
-  background: color-mix(in srgb, var(--accent3) 10%, transparent);
-}
-
-.colFav{ width: 56px; }
-
-.colorChips{
-  display:flex;
-  gap: 8px;
-  flex-wrap: wrap;
-  align-items:center;
-}
-
-.chip{
-  display:inline-flex;
-  align-items:center;
-  gap: 8px;
-  padding: 6px 10px;
-  border-radius: 999px;
-  border: 1px solid var(--line);
-  background: color-mix(in srgb, var(--card) 70%, transparent);
-  font-size: 12px;
-}
-
-.dot{
-  width: 12px;
-  height: 12px;
-  border-radius: 999px;
-  border: 1px solid rgba(0,0,0,.18);
-  box-shadow: 0 1px 0 rgba(255,255,255,.14) inset;
-}
-
-.starBtn{
-  border: 1px solid var(--line);
-  background: color-mix(in srgb, var(--panel) 70%, transparent);
-  border-radius: 12px;
-  padding: 8px 10px;
-  cursor:pointer;
-  font-size: 12px;
-}
-
-.starBtn.is-on{
-  border-color: color-mix(in srgb, var(--accent2) 55%, var(--line));
-  background: color-mix(in srgb, var(--accent2) 14%, transparent);
-}
-
-/* =========================
-   Favorites / Notes / Checklist
-========================= */
-.favList{
-  display:flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.favItem{
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-  padding: 10px 12px;
-  background: color-mix(in srgb, var(--panel) 70%, transparent);
-}
-
-.favTop{
-  display:flex;
-  justify-content: space-between;
-  gap: 10px;
-  align-items:flex-start;
-}
-
-.favName{ font-weight: 800; }
-.favMeta{ color: var(--muted); font-size: 12px; margin-top: 4px; }
-.favChips{ margin-top: 8px; }
-
-.list{
-  display:flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.noteItem{
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-  padding: 12px;
-  background: color-mix(in srgb, var(--panel) 72%, transparent);
-}
-
-.noteMeta{
-  display:flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  color: var(--muted);
-  font-size: 12px;
-}
-
-.badge{
-  font-size: 11px;
-  padding: 4px 8px;
-  border-radius: 999px;
-  border: 1px solid var(--line);
-  background: color-mix(in srgb, var(--card) 70%, transparent);
-}
-
-.noteText{
-  margin: 10px 0 0;
-  white-space: pre-wrap;
-  line-height: 1.55;
-  font-size: 13px;
-}
-
-.noteActions{
-  display:flex;
-  gap: 8px;
-  flex-wrap: wrap;
-  margin-top: 10px;
-}
-
-.iconBtn{
-  border: 1px solid var(--line);
-  background: color-mix(in srgb, var(--panel) 70%, transparent);
-  border-radius: 12px;
-  padding: 8px 10px;
-  cursor:pointer;
-  font-size: 12px;
-}
-
-.iconBtn--danger{
-  border-color: color-mix(in srgb, var(--danger) 40%, var(--line));
-}
-
-.checklist{
-  display:flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.checkItem{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap: 10px;
-  padding: 10px 12px;
-  border-radius: var(--radius);
-  border: 1px solid var(--line);
-  background: color-mix(in srgb, var(--panel) 72%, transparent);
-}
-
-.checkLeft{
-  display:flex;
-  align-items:center;
-  gap: 10px;
-  min-width:0;
-}
-
-.checkText{
-  font-size: 13px;
-  line-height: 1.3;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.checkRight{
-  display:flex;
-  gap: 8px;
-  align-items:center;
-}
 
 .grid2{
   display:grid;
@@ -546,9 +262,132 @@ button, input, select, textarea{ font: inherit; color: inherit; }
   .grid2{ grid-template-columns: 1fr 1fr; }
 }
 
-/* =========================
-   Links
-========================= */
+/* Table */
+.tableWrap{
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  overflow: auto;
+  background: rgba(255,255,255,.06);
+}
+.table{
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 760px;
+}
+.table th, .table td{
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--line);
+  font-size: 13px;
+  vertical-align: middle;
+}
+.table th{
+  position: sticky;
+  top: 0;
+  background: rgba(10,11,18,.82);
+  text-align: left;
+  color: var(--muted);
+  font-weight: 800;
+}
+.table tr:hover td{
+  background: rgba(125,211,252,.10);
+}
+.colFav{ width: 56px; }
+
+/* Chips */
+.colorChips{
+  display:flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items:center;
+}
+.chip{
+  display:inline-flex;
+  align-items:center;
+  gap: 8px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: rgba(255,255,255,.07);
+  font-size: 12px;
+}
+.dot{
+  width: 12px;
+  height: 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(0,0,0,.18);
+  box-shadow: 0 1px 0 rgba(255,255,255,.14) inset;
+}
+
+/* Favorites */
+.starBtn{
+  border: 1px solid var(--line);
+  background: rgba(255,255,255,.06);
+  border-radius: 12px;
+  padding: 8px 10px;
+  cursor:pointer;
+  font-size: 12px;
+}
+.starBtn.is-on{
+  border-color: rgba(251,113,133,.55);
+  background: rgba(251,113,133,.14);
+}
+.favList{ display:flex; flex-direction: column; gap: 10px; }
+.favItem{
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 10px 12px;
+  background: rgba(255,255,255,.06);
+}
+.favTop{ display:flex; justify-content: space-between; gap: 10px; align-items:flex-start; }
+.favName{ font-weight: 800; }
+.favMeta{ color: var(--muted); font-size: 12px; margin-top: 4px; }
+.favChips{ margin-top: 8px; }
+
+/* Notes list */
+.list{ display:flex; flex-direction: column; gap: 10px; }
+.noteItem{
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 12px;
+  background: rgba(255,255,255,.06);
+}
+.noteMeta{ display:flex; flex-wrap: wrap; gap: 6px; color: var(--muted); font-size: 12px; }
+.badge{
+  font-size: 11px;
+  padding: 4px 8px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: rgba(255,255,255,.07);
+}
+.noteText{ margin: 10px 0 0; white-space: pre-wrap; line-height: 1.55; font-size: 13px; }
+.noteActions{ display:flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
+.iconBtn{
+  border: 1px solid var(--line);
+  background: rgba(255,255,255,.06);
+  border-radius: 12px;
+  padding: 8px 10px;
+  cursor:pointer;
+  font-size: 12px;
+}
+.iconBtn--danger{ border-color: rgba(251,113,133,.40); }
+
+/* Checklist */
+.checklist{ display:flex; flex-direction: column; gap: 10px; }
+.checkItem{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: var(--radius);
+  border: 1px solid var(--line);
+  background: rgba(255,255,255,.06);
+}
+.checkLeft{ display:flex; align-items:center; gap: 10px; min-width:0; }
+.checkText{ font-size: 13px; line-height: 1.3; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.checkRight{ display:flex; gap: 8px; align-items:center; }
+
+/* Links */
 .linkList{
   margin: 0;
   padding: 0;
@@ -557,42 +396,26 @@ button, input, select, textarea{ font: inherit; color: inherit; }
   flex-direction: column;
   gap: 10px;
 }
-
 .link{
   display:block;
   padding: 12px;
   border-radius: var(--radius);
   border: 1px solid var(--line);
-  background: color-mix(in srgb, var(--panel) 72%, transparent);
+  background: rgba(255,255,255,.06);
   text-decoration: none;
 }
+.link:hover{ background: rgba(125,211,252,.10); }
 
-.link:hover{
-  background: color-mix(in srgb, var(--accent3) 10%, transparent);
-}
-
-.bullets{
-  margin: 0;
-  padding-left: 18px;
-  color: var(--muted);
-  font-size: 13px;
-}
-
-.details summary{
-  cursor:pointer;
-  font-weight: 800;
-  font-size: 13px;
-}
+.details summary{ cursor:pointer; font-weight: 800; font-size: 13px; }
 .details p, .details ul{ margin: 10px 0 0; }
+
+.bullets{ margin: 0; padding-left: 18px; color: var(--muted); font-size: 13px; }
 
 .small{ font-size: 12px; }
 .muted{ color: var(--muted); }
 .mt8{ margin-top: 8px; }
 .mt12{ margin-top: 12px; }
 
-/* =========================
-   Footer
-========================= */
 .footer{
   max-width: 1220px;
   margin: 14px auto 30px;
