@@ -551,4 +551,6 @@ button, input, select, textarea{ font: inherit; color: inherit; }
 
 .footer{
   max-width: 1220px;
-  margin: 14px
+  margin: 14px auto 30px;
+  padding: 0 16px;
+}
