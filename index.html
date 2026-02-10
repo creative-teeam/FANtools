@@ -1,171 +1,97 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8" />
-  <title>HumanTouch Lab - AI文章を人間らしく整えるツール</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <link rel="stylesheet" href="style.css" />
+  <meta charset="UTF-8">
+  <title>意見の筋トレ - 第三の立場メーカー</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div class="app">
-    <header>
-      <div class="brand">
-        <div class="logo">H</div>
-        <div>
-          <h1>HumanTouch Lab</h1>
-          <p class="tagline">
-            AIが書いた文章を、「人間らしく・ちょうどよく」整えるためのローカルツール
-          </p>
-        </div>
+<header>
+  <h1>意見の筋トレ - 第三の立場メーカー</h1>
+</header>
+
+<main>
+  <!-- テーマ入力 -->
+  <section class="section">
+    <div class="section-title">1. 今日のテーマ</div>
+    <label for="topic">テーマ（例：匿名アカウントは実名より不誠実である）</label>
+    <input type="text" id="topic" placeholder="ここに、自分が考えたい主張を書いてください">
+    <div class="hint">
+      ・自分のタイムラインでよく見る主張を書いてみてください。<br>
+      ・または、自分がモヤモヤしているテーマでもOKです。
+    </div>
+  </section>
+
+  <!-- 賛成 / 反対 -->
+  <section class="section">
+    <div class="section-title">2. 賛成と反対、両側から書いてみる</div>
+    <div class="flex-row">
+      <div class="col">
+        <h2 class="col-title">賛成の立場から</h2>
+        <label for="pro-claim">賛成の主張（なぜこの主張は正しいと思う人がいるか）</label>
+        <textarea id="pro-claim"></textarea>
+
+        <label for="pro-reason">その理由・根拠（経験・価値観・データなど）</label>
+        <textarea id="pro-reason"></textarea>
       </div>
-    </header>
 
-    <main class="layout">
-      <!-- LEFT: input + controls -->
-      <section class="panel">
-        <div class="panel-header">
-          <div class="panel-title">
-            元の文章
-            <span class="badge">AIの出力をそのまま貼り付け</span>
-          </div>
-          <button id="clearInput" class="ghost small danger" type="button">
-            ✕ クリア
-          </button>
-        </div>
+      <div class="col">
+        <h2 class="col-title">反対の立場から</h2>
+        <label for="con-claim">反対の主張（なぜこの主張に反対する人がいるか）</label>
+        <textarea id="con-claim"></textarea>
 
-        <textarea
-          id="inputText"
-          placeholder="例：AIが生成したメール文や説明文をここに貼り付けてください。"
-        ></textarea>
-        <div class="input-helper">
-          <span id="inputCount">0文字</span>
-          <span>ブラウザ内だけで処理され、サーバには送信されません。</span>
-        </div>
+        <label for="con-reason">その理由・根拠（経験・価値観・データなど）</label>
+        <textarea id="con-reason"></textarea>
+      </div>
+    </div>
+    <div class="hint">
+      どちらの立場にも「もっともなところ」を見つけるつもりで書いてみてください。
+    </div>
+  </section>
 
-        <div class="mode-tabs" id="modeTabs">
-          <button
-            class="mode-btn active"
-            data-mode="soften"
-            type="button"
-            title="強すぎる表現を和らげる"
-          >
-            <span class="icon">🪶</span>柔らかくする
-          </button>
-          <button
-            class="mode-btn"
-            data-mode="clarify"
-            type="button"
-            title="あいまいな表現をできるだけ明確にする"
-          >
-            <span class="icon">💡</span>はっきりさせる
-          </button>
-          <button
-            class="mode-btn"
-            data-mode="emotion"
-            type="button"
-            title="少しだけ感情・共感を足す"
-          >
-            <span class="icon">❤️</span>感情を添える
-          </button>
-          <button
-            class="mode-btn"
-            data-mode="polish"
-            type="button"
-            title="丁寧さ・読みやすさを調整"
-          >
-            <span class="icon">🧹</span>整えて読みやすく
-          </button>
-        </div>
-        <p id="modeDescription" class="mode-description">
-          「柔らかくする」は、強すぎる・断定的な表現をマイルドに言い換えます。
-        </p>
+  <!-- 第三の立場 -->
+  <section class="section">
+    <div class="section-title">3. 第三の立場を組み立てる</div>
 
-        <div class="actions">
-          <button id="applyMode" class="primary" type="button">
-            <span>変換する</span> ↻
-          </button>
-          <button id="swapTexts" class="secondary small" type="button">
-            入れ替え（結果→元に戻す）
-          </button>
-          <button id="restoreDraft" class="ghost small" type="button">
-            最後の下書きを復元
-          </button>
-          <button id="analyzeTone" class="ghost small" type="button">
-            トーンを解析
-          </button>
-        </div>
+    <label for="third-common">
+      (1) 賛成と反対、両方の「もっともな点」はどこか？
+    </label>
+    <textarea id="third-common"
+      placeholder="例：賛成側は〇〇というリスクを重く見ていてもっとも。反対側は△△という自由を大事にしていて、それも理解できる。"></textarea>
 
-        <div class="hint" id="writingHint">
-          <strong>ヒント：</strong> 主語と「誰のための文章か」を一度書き出してから整えると、
-          トーンを決めやすくなります。
-        </div>
-      </section>
+    <label for="third-missing">
+      (2) 賛成・反対どちらも「見落としていそうな点」は？
+    </label>
+    <textarea id="third-missing"
+      placeholder="例：長期的な影響や、少数派の人のケースがあまり考慮されていないかもしれない。"></textarea>
 
-      <!-- RIGHT: result + metrics -->
-      <section class="panel">
-        <div class="result-header">
-          <div class="panel-title">
-            整えた文章
-            <span class="badge">ここから自由に手動で修正してOK</span>
-          </div>
-          <div class="actions">
-            <button id="copyOutput" class="secondary small" type="button">
-              コピー
-            </button>
-            <button id="downloadOutput" class="ghost small" type="button">
-              保存（.txt）
-            </button>
-          </div>
-        </div>
+    <label for="third-compromise">
+      (3) 条件つきで両方を少しずつ満たす「折衷案」はありえるか？
+    </label>
+    <textarea id="third-compromise"
+      placeholder="例：原則は□□だが、××の条件では例外的に◎◎を認める、など。"></textarea>
 
-        <textarea
-          id="outputText"
-          class="textarea-small"
-          placeholder="結果がここに表示されます。モードを変えて何度も試してみてください。"
-        ></textarea>
+    <label for="third-final">
+      (4) 今の自分の立場を1〜2行でまとめると？
+    </label>
+    <textarea id="third-final"
+      placeholder="例：今の自分は、□□を大事にしたいので、基本的には◇◇寄り。ただし、××の場合はもう少し考えを変える余地がある。"></textarea>
+  </section>
 
-        <div class="meta">
-          <div class="pill">
-            📏 <span id="outputCount">0文字</span>
-          </div>
-          <div class="pill">
-            読みやすさ
-            <div class="score-bar">
-              <div id="readabilityBar" class="score-bar-inner"></div>
-            </div>
-            <span id="readabilityLabel" class="score-label">-</span>
-          </div>
-          <div class="pill">
-            感情バランス
-            <div class="score-bar">
-              <div id="toneBar" class="score-bar-inner"></div>
-            </div>
-            <span id="toneLabel" class="score-label">-</span>
-          </div>
-        </div>
+  <!-- 出力 -->
+  <section class="section">
+    <div class="section-title">4. まとめて眺めてみる</div>
+    <button class="btn-primary" id="btn-generate-summary">まとめを見る</button>
+    <button class="btn-secondary" id="btn-clear">全部クリア</button>
+    <div id="summary" class="summary-container"></div>
+  </section>
+</main>
 
-        <div class="hint" style="margin-top: 10px">
-          <strong>この結果は「たたき台」です。</strong><br />
-          最後の一手は、あなたの言葉で仕上げてください。  
-          不自然だと思うところは、遠慮なく書き換えてください。
-          <div class="chips" id="issueChips"></div>
-        </div>
-      </section>
-    </main>
+<footer>
+  <small>このツールはAIを使わず、あなた自身の思考を整理するためのものです。</small>
+</footer>
 
-    <footer class="footer">
-      <span>すべての処理はブラウザ内で完結します。データは送信されません。</span>
-      <span>
-        GitHub Pagesで動作するシンプルなプロトタイプ / 作者メモ：AIの苦手を人が補うための実験場
-      </span>
-    </footer>
-  </div>
-
-  <div id="toast" class="toast">
-    <span id="toastIcon">✅</span>
-    <span id="toastMsg">コピーしました</span>
-  </div>
-
-  <script src="app.js"></script>
+<script src="app.js"></script>
 </body>
 </html>
