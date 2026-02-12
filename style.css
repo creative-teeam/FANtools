@@ -12,6 +12,7 @@ body {
   color: #222;
 }
 
+/* ヘッダー */
 header {
   background: #1f2933;
   color: #fff;
@@ -28,12 +29,14 @@ header p {
   font-size: 0.9rem;
 }
 
+/* メインレイアウト */
 main {
   max-width: 1000px;
   margin: 1.5rem auto 2rem;
   padding: 0 1rem;
 }
 
+/* カード */
 .card {
   background: #fff;
   border-radius: 8px;
@@ -53,6 +56,7 @@ h3 {
   font-size: 1.1rem;
 }
 
+/* フォーム系 */
 label {
   display: block;
   margin: 0.4rem 0;
@@ -86,6 +90,7 @@ button:hover {
   background: #1d4ed8;
 }
 
+/* 情報ブロック */
 .info-block {
   margin-top: 1rem;
   padding: 0.8rem 1rem;
@@ -107,11 +112,13 @@ button:hover {
   margin-bottom: 0.3rem;
 }
 
+/* リスト */
 ul {
   margin: 0.2rem 0 0.5rem 1.2rem;
   padding: 0;
 }
 
+/* フッター */
 footer {
   text-align: center;
   font-size: 0.8rem;
@@ -121,7 +128,7 @@ footer {
   background: #f9fafb;
 }
 
-/* チェックリストの2カラム表示 */
+/* チェックリスト 2カラム */
 .checklist-container {
   display: flex;
   flex-wrap: wrap;
@@ -141,7 +148,7 @@ footer {
   margin-top: 0;
 }
 
-/* フリーワード検索セクション */
+/* 想定外検索セクション */
 .free-search-section {
   margin-top: 1.2rem;
   padding-top: 0.8rem;
@@ -156,4 +163,17 @@ footer {
 .example-text {
   font-style: italic;
   color: #2563eb;
+}
+
+/* スマホ対応（幅が狭い時） */
+@media (max-width: 600px) {
+  select,
+  input[type="text"] {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .checklist-container {
+    flex-direction: column;
+  }
 }
