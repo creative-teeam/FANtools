@@ -10,7 +10,6 @@ const diagnosisDetail = document.getElementById("diagnosisDetail");
 const diagnosisDetailName = document.getElementById("diagnosisDetailName");
 const diagnosisDetailNotes = document.getElementById("diagnosisDetailNotes");
 
-// 簡単な初期サンプル（必要なら削除してOK）
 let diagnoses = [
   {
     name: "自閉スペクトラム症（ASD）",
@@ -55,13 +54,10 @@ addDiagnosisBtn.addEventListener("click", () => {
 
   diagnoses.push({ name, notes });
   renderDiagnosisList();
-
-  // 入力欄を空に
   diagNameInput.value = "";
   diagNotesInput.value = "";
 });
 
-// 初期描画
 renderDiagnosisList();
 
 // ===============================
@@ -78,7 +74,6 @@ const responseDetailTitle = document.getElementById("responseDetailTitle");
 const responseDetailBody = document.getElementById("responseDetailBody");
 const responseDetailLevel = document.getElementById("responseDetailLevel");
 
-// 簡単な初期サンプル
 let responses = [
   {
     title: "大きな音が苦手な子への配慮",
@@ -143,14 +138,124 @@ addResponseBtn.addEventListener("click", () => {
   respLevelSelect.value = "";
 });
 
-// 初期描画
 renderResponseList();
 
 // ===============================
-// 2. 親の付き添い必須ラインチェックリスト（汎用）
+// 2. 親の付き添い必須ラインチェックリスト
 // ===============================
 const evaluateButton = document.getElementById("evaluateChecklist");
 const checklistResult = document.getElementById("checklistResult");
+
+const addDailyItemBtn = document.getElementById("addDailyItemBtn");
+const addSchoolItemBtn = document.getElementById("addSchoolItemBtn");
+const dailyChecklistForm = document.getElementById("dailyChecklist");
+const schoolChecklistForm = document.getElementById("schoolChecklist");
+
+function addChecklistItem(formElement, groupName) {
+  const text = prompt(
+    "追加したい項目の内容を入力してください（画面にそのまま表示されます）"
+  );
+  if (!text) return;
+  const type = prompt(
+    "この項目の種類を半角で入力してください：\n" +
+      "danger（危険） / support（見守り） / medical（医療）のいずれか"
+  );
+  const allowed = ["danger", "support", "medical"];
+  const value = allowed.includes(type) ? type : "support";
+
+  const label = document.createElement("label");
+  label.innerHTML = `
+    <input type="checkbox" name="${groupName}" value="${value}" />
+    ${text}
+  `;
+  formElement.appendChild(label);
+}
+
+addDailyItemBtn.addEventListener("click", () => {
+  addChecklistItem(dailyChecklistForm, "daily");
+});
+
+addSchoolItemBtn.addEventListener("click", () => {
+  addChecklistItem(schoolChecklistForm, "school");
+});
+
+// 判定テンプレ管理
+const resultTemplateSelect = document.getElementById("resultTemplateSelect");
+const resultTemplateBody = document.getElementById("resultTemplateBody");
+const addTemplateBtn = document.getElementById("addTemplateBtn");
+const applyTemplateBtn = document.getElementById("applyTemplateBtn");
+const newTemplateNameInput = document.getElementById("newTemplateName");
+const newTemplateBodyInput = document.getElementById("newTemplateBody");
+
+let resultTemplates = [
+  {
+    name: "付き添い原則必須（危険・医療リスクあり）",
+    body:
+      "危険な行動や医療的なリスクが確認されています。\n原則として、保護者または支援者の付き添いを必須とし、団体として対応可能かどうかを慎重に検討してください。"
+  },
+  {
+    name: "付き添い推奨（安全上の不安あり）",
+    body:
+      "いくつかの場面で、1対1のサポートや見守りがあった方が安全・安心と考えられます。\n初期の数回だけでも、保護者の付き添いをお願いし、様子を一緒に確認することを検討してください。"
+  },
+  {
+    name: "付き添い必須ではない（現時点）",
+    body:
+      "現在の情報からは、常時の保護者付き添いがなくても対応できる可能性があります。\nただし、初めての場では予想外の反応が出ることもあるため、最初の数回は連絡がつきやすい状態にしてもらいましょう。"
+  }
+];
+
+function renderTemplateSelect() {
+  resultTemplateSelect.innerHTML = "";
+  resultTemplates.forEach((tpl, index) => {
+    const opt = document.createElement("option");
+    opt.value = index;
+    opt.textContent = tpl.name;
+    resultTemplateSelect.appendChild(opt);
+  });
+  if (resultTemplates.length > 0) {
+    resultTemplateSelect.value = 0;
+    resultTemplateBody.value = resultTemplates[0].body;
+  }
+}
+
+resultTemplateSelect.addEventListener("change", () => {
+  const idx = parseInt(resultTemplateSelect.value, 10);
+  const tpl = resultTemplates[idx];
+  if (!tpl) return;
+  resultTemplateBody.value = tpl.body;
+});
+
+addTemplateBtn.addEventListener("click", () => {
+  const name = newTemplateNameInput.value.trim();
+  const body = newTemplateBodyInput.value.trim();
+  if (!name || !body) {
+    alert("テンプレ名と内容を入力してください。");
+    return;
+  }
+  resultTemplates.push({ name, body });
+  renderTemplateSelect();
+  newTemplateNameInput.value = "";
+  newTemplateBodyInput.value = "";
+});
+
+applyTemplateBtn.addEventListener("click", () => {
+  if (checklistResult.classList.contains("hidden")) {
+    alert("先に『付き添いの必要度を判定』ボタンを押してください。");
+    return;
+  }
+  const body = resultTemplateBody.value.trim();
+  if (!body) return;
+
+  checklistResult.innerHTML += `
+    <div class="info-block" style="margin-top:0.6rem; background:#eef2ff;">
+      <div class="info-section-title">テンプレートからのコメント</div>
+      <p>${body.replace(/\n/g, "<br />")}</p>
+    </div>
+  `;
+});
+
+renderTemplateSelect();
 
 evaluateButton.addEventListener("click", () => {
   const dailyChecks = Array.from(
@@ -183,10 +288,6 @@ evaluateButton.addEventListener("click", () => {
         ・危険な行動や医療的なリスクが確認されています。<br />
         ・原則として、保護者または支援者の付き添いを必須とし、団体として対応可能かどうかを慎重に検討してください。
       </p>
-      <ul>
-        <li>事前に、具体的なリスクと対応方法を保護者から詳しく聞く</li>
-        <li>スタッフだけで対応しきれないと判断した場合は、参加形態の変更や短時間参加なども視野に入れる</li>
-      </ul>
     `;
   } else if (dangerCount === 1 || supportCount >= 2) {
     levelTitle = "付き添い「推奨」レベルの可能性があります";
@@ -195,10 +296,6 @@ evaluateButton.addEventListener("click", () => {
         ・いくつかの場面で、1対1のサポートや見守りがあった方が安全・安心と考えられます。<br />
         ・初期の数回だけでも、保護者の付き添いをお願いし、様子を一緒に確認することを検討してください。
       </p>
-      <ul>
-        <li>付き添いが難しい場合は、参加時間を短くする・役割を限定するなどの工夫を検討する</li>
-        <li>学校や療育先での支援状況も参考にしながら、団体内で受け入れ体制を話し合う</li>
-      </ul>
     `;
   } else if (dangerCount === 0 && supportCount <= 1 && medicalCount === 0) {
     levelTitle = "付き添い「必須ではない」可能性が高いです";
@@ -207,10 +304,6 @@ evaluateButton.addEventListener("click", () => {
         ・現時点の情報からは、常時の保護者付き添いがなくても対応できる可能性があります。<br />
         ・ただし、初めての場では予想外の反応が出ることもあるため、最初の数回は連絡がつきやすい状態にしてもらいましょう。
       </p>
-      <ul>
-        <li>何か気になる行動があれば、その都度保護者と情報共有する</li>
-        <li>子ども本人にも、困ったときに相談できる大人をはっきり示しておく</li>
-      </ul>
     `;
   }
 
@@ -231,12 +324,18 @@ evaluateButton.addEventListener("click", () => {
 });
 
 // ===============================
-// 3. その場の対応フロー（汎用）
+// 3. その場の対応フロー（既存＋カスタム）
 // ===============================
 const incidentTypeSelect = document.getElementById("incidentType");
 const incidentFlowDiv = document.getElementById("incidentFlow");
+const customFlowNameInput = document.getElementById("customFlowName");
+const customFlowBodyInput = document.getElementById("customFlowBody");
+const addCustomFlowBtn = document.getElementById("addCustomFlowBtn");
 
-incidentTypeSelect.addEventListener("change", () => {
+// 既存フローは固定、カスタムはここに追加
+let customFlows = []; // {id, name, body}
+
+function renderIncidentFlow() {
   const value = incidentTypeSelect.value;
   if (!value) {
     incidentFlowDiv.classList.add("hidden");
@@ -248,7 +347,7 @@ incidentTypeSelect.addEventListener("change", () => {
 
   if (value === "immediateDanger") {
     html = `
-      <div class="info-section-title">身体の危険がある場合の対応フロー</div>
+      <div class="info-section-title">【既存】身体の危険がある場合の対応フロー</div>
       <ol>
         <li><strong>すぐに安全を確保する</strong>：<br />
           ・走り出した子どもを安全な場所まで誘導し、危険物や段差から遠ざける<br />
@@ -270,7 +369,7 @@ incidentTypeSelect.addEventListener("change", () => {
     `;
   } else if (value === "psychological") {
     html = `
-      <div class="info-section-title">他の子が怖がっている・不安な場合の対応フロー</div>
+      <div class="info-section-title">【既存】他の子が怖がっている・不安な場合の対応フロー</div>
       <ol>
         <li><strong>まず「怖がっている側」を安心させる</strong>：<br />
           ・安全な場所に移動し、「怖かったね」「びっくりしたね」と気持ちを受け止める
@@ -291,7 +390,7 @@ incidentTypeSelect.addEventListener("change", () => {
     `;
   } else if (value === "ruleBreak") {
     html = `
-      <div class="info-section-title">ルール違反が何度も続く場合の対応フロー</div>
+      <div class="info-section-title">【既存】ルール違反が何度も続く場合の対応フロー</div>
       <ol>
         <li><strong>「具体的にどの行動か」を言語化する</strong>：<br />
           ・「ちゃんとして」ではなく、「○○のときに△△をしたのが困っている」と具体的に伝える
@@ -310,7 +409,7 @@ incidentTypeSelect.addEventListener("change", () => {
     `;
   } else if (value === "medicalEmergency") {
     html = `
-      <div class="info-section-title">医療的な緊急事態（発作・アレルギーなど）の対応フロー</div>
+      <div class="info-section-title">【既存】医療的な緊急事態（発作・アレルギーなど）の対応フロー</div>
       <ol>
         <li><strong>まず安全を確保する</strong>：<br />
           ・周囲の危険物（硬いもの・角があるもの）を遠ざける<br />
@@ -330,8 +429,39 @@ incidentTypeSelect.addEventListener("change", () => {
         </li>
       </ol>
     `;
+  } else if (value.startsWith("custom:")) {
+    const id = value.replace("custom:", "");
+    const flow = customFlows.find((f) => f.id === id);
+    if (flow) {
+      html = `
+        <div class="info-section-title">【カスタム】${flow.name}</div>
+        <p>${flow.body.replace(/\n/g, "<br />")}</p>
+      `;
+    }
   }
 
   incidentFlowDiv.classList.remove("hidden");
   incidentFlowDiv.innerHTML = html;
+}
+
+incidentTypeSelect.addEventListener("change", renderIncidentFlow);
+
+addCustomFlowBtn.addEventListener("click", () => {
+  const name = customFlowNameInput.value.trim();
+  const body = customFlowBodyInput.value.trim();
+  if (!name || !body) {
+    alert("フロー名と内容を入力してください。");
+    return;
+  }
+
+  const id = `cf_${Date.now()}`;
+  customFlows.push({ id, name, body });
+
+  const opt = document.createElement("option");
+  opt.value = "custom:" + id;
+  opt.textContent = `【カスタム】${name}`;
+  incidentTypeSelect.appendChild(opt);
+
+  customFlowNameInput.value = "";
+  customFlowBodyInput.value = "";
 });
