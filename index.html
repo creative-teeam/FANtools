@@ -34,6 +34,7 @@
     <section class="card">
       <h2>1. 障害・病気・特性を選ぶ</h2>
       <p>該当するものを選択してください（複数あれば順番に確認してください）。</p>
+
       <label for="conditionSelect">障害・病気・特性：</label>
       <select id="conditionSelect">
         <option value="">選択してください</option>
@@ -52,12 +53,12 @@
         <div id="risks"></div>
         <div id="specialMeasures"></div>
 
-        <!-- 各項目ごとの「想定外の特性」検索欄 -->
+        <!-- この子に特有の想定外特性の検索欄 -->
         <div class="free-search-section">
           <div class="info-section-title">この子に特有の「想定外の特性」や心配ごと</div>
           <p class="small-text">
             例：<span class="example-text">「男の子だけに近づく」「女の子の後ろに立つ」「大きな声が極端に苦手」など</span><br />
-            キーワードを入れると、考え方のヒントを表示します。
+            キーワードを入れると、個別の見守りポイントのヒントを表示します。
           </p>
           <label for="conditionFreeSearch">特性・行動キーワード：</label>
           <input
@@ -81,23 +82,23 @@
           <h3>日常生活での様子</h3>
           <form id="dailyChecklist">
             <label>
-              <input type="checkbox" name="daily" value="danger">
+              <input type="checkbox" name="daily" value="danger" />
               目を離すとすぐにどこかへ行ってしまう・迷子になりやすい
             </label>
             <label>
-              <input type="checkbox" name="daily" value="danger">
+              <input type="checkbox" name="daily" value="danger" />
               危険な場所（道路・高いところ・台所など）に繰り返し行ってしまう
             </label>
             <label>
-              <input type="checkbox" name="daily" value="support">
+              <input type="checkbox" name="daily" value="support" />
               知らない人との距離感が近すぎる・身体に触ってしまう
             </label>
             <label>
-              <input type="checkbox" name="daily" value="support">
+              <input type="checkbox" name="daily" value="support" />
               強いこだわりやパニックがあり、家族でないと落ち着かせるのが難しい
             </label>
             <label>
-              <input type="checkbox" name="daily" value="medical">
+              <input type="checkbox" name="daily" value="medical" />
               発作やアレルギーなど、医療的な緊急対応が必要になる可能性がある
             </label>
           </form>
@@ -107,23 +108,23 @@
           <h3>学校生活・集団活動での様子</h3>
           <form id="schoolChecklist">
             <label>
-              <input type="checkbox" name="school" value="support">
+              <input type="checkbox" name="school" value="support" />
               授業中に席を立って歩き回ることがよくある
             </label>
             <label>
-              <input type="checkbox" name="school" value="support">
+              <input type="checkbox" name="school" value="support" />
               先生から「1対1のサポートがあると安心」と言われている
             </label>
             <label>
-              <input type="checkbox" name="school" value="danger">
+              <input type="checkbox" name="school" value="danger" />
               他の子を押す・叩く・強く抱きつくなどの行動が繰り返し見られる
             </label>
             <label>
-              <input type="checkbox" name="school" value="support">
+              <input type="checkbox" name="school" value="support" />
               からかわれやすい／トラブルに巻き込まれやすいと言われている
             </label>
             <label>
-              <input type="checkbox" name="school" value="medical">
+              <input type="checkbox" name="school" value="medical" />
               学校で医療的ケア（発作対応・エピペン・吸入など）の準備をしている
             </label>
           </form>
