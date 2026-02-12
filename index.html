@@ -8,62 +8,125 @@
 <body>
   <header>
     <h1>子どもの特性・配慮ガイド（演劇・ワークショップ向け）</h1>
-    <p>障害や病気の特性に応じた基本対策・リスク・チェックリスト・対応フローを確認できます。</p>
+    <p>病名・障害・特性の一覧と、それに対応するチェックリストや対応表を管理できます。</p>
   </header>
 
   <main>
-    <!-- 0. 想定外の障害・病気・特性の検索（診断名） -->
+    <!-- 0. 病名・障害・特性 一覧＆追加 -->
     <section class="card">
-      <h2>0. 障害・病気・特性の検索（フリーワード）</h2>
+      <h2>0. 病名・障害・特性 一覧（随時追加）</h2>
       <p>
-        ここに診断名・特性名を入力してください。<br />
-        例：<span class="example-text">
-          自閉スペクトラム症、ADHD、学習障害、境界知能、選択性緘黙、
-          発達性協調運動障害、チック、起立性調節障害 など
-        </span>
+        対象となる病名・障害・特性を一覧として管理します。<br />
+        右側のフォームから新しい項目を追加できます。
       </p>
-      <label for="globalFreeSearch">診断名・特性名：</label>
-      <input
-        type="text"
-        id="globalFreeSearch"
-        placeholder="例：自閉スペクトラム症、ADHD、学習障害、境界知能 など"
-      />
-      <button id="globalFreeSearchBtn">対処の考え方を表示</button>
 
-      <div id="globalFreeSearchResult" class="info-block hidden"></div>
-    </section>
+      <div class="flex-row">
+        <!-- 左：一覧 -->
+        <div class="list-block">
+          <h3>登録済みリスト</h3>
+          <ul id="diagnosisList" class="item-list">
+            <!-- JSで追加 -->
+          </ul>
+        </div>
 
-    <!-- 1. 代表的な障害・病気・特性を選ぶ -->
-    <section class="card">
-      <h2>1. 代表的な障害・病気・特性を選ぶ</h2>
-      <p>よくある代表的なケースは、ここから選択して対処法を見られます。</p>
+        <!-- 右：追加フォーム -->
+        <div class="form-block">
+          <h3>新しい病名・障害・特性を追加</h3>
+          <label for="diagName">名前（必須）：</label>
+          <input
+            type="text"
+            id="diagName"
+            placeholder="例：自閉スペクトラム症（ASD）、ADHD、学習障害 など"
+          />
 
-      <label for="conditionSelect">障害・病気・特性：</label>
-      <select id="conditionSelect">
-        <option value="">選択してください</option>
-        <option value="asd">自閉スペクトラム症（ASD）</option>
-        <option value="adhd">ADHD（注意欠如・多動症）</option>
-        <option value="intellectual">知的障害</option>
-        <option value="epilepsy">てんかん</option>
-        <option value="allergy">重度アレルギー（食物・薬・ハチなど）</option>
-        <option value="mental">不安障害・うつなどのメンタル面の課題</option>
-        <option value="none">特に診断名はないが、配慮が必要そう</option>
-      </select>
+          <label for="diagNotes">
+            現時点で分かっている情報・配慮のメモ（任意）：
+          </label>
+          <textarea
+            id="diagNotes"
+            rows="4"
+            placeholder="例：大きな音が苦手／女の子との距離感に注意／発作時は保護者に連絡 など"
+          ></textarea>
 
-      <div id="conditionInfo" class="info-block hidden">
-        <h3>基本情報・対策・リスク</h3>
-        <div id="basicMeasures"></div>
-        <div id="risks"></div>
-        <div id="specialMeasures"></div>
+          <button id="addDiagnosisBtn">一覧に追加</button>
+        </div>
+      </div>
+
+      <div id="diagnosisDetail" class="info-block hidden">
+        <div class="info-section-title">選択された病名・障害・特性のメモ</div>
+        <p id="diagnosisDetailName"></p>
+        <div id="diagnosisDetailNotes"></div>
+        <p class="small-text">
+          ※ここに書かれた内容は、現場で共有したいメモとして使ってください。<br />
+          医療的な判断や正式な支援内容は、必ず保護者・専門家に確認してください。
+        </p>
       </div>
     </section>
 
-    <!-- 2. 親の付き添い必須ラインチェックリスト -->
+    <!-- 1. 対応表・チェックリスト 一覧＆追加 -->
     <section class="card">
-      <h2>2. 親の付き添い必須ラインチェックリスト</h2>
+      <h2>1. 対応表・チェックリスト（随時追加）</h2>
+      <p>
+        「どんな状況のときに」「どんな対応をするか」を項目ごとに登録できます。<br />
+        重要度（danger / support / medical など）も一緒に記録しておくと便利です。
+      </p>
+
+      <div class="flex-row">
+        <!-- 左：対応表一覧 -->
+        <div class="list-block">
+          <h3>登録済みの対応・チェック項目</h3>
+          <ul id="responseList" class="item-list">
+            <!-- JSで追加 -->
+          </ul>
+        </div>
+
+        <!-- 右：追加フォーム -->
+        <div class="form-block">
+          <h3>新しい対応・チェック項目を追加</h3>
+          <label for="respTitle">項目名（必須）：</label>
+          <input
+            type="text"
+            id="respTitle"
+            placeholder="例：大きな音が苦手な子への配慮"
+          />
+
+          <label for="respBody">
+            内容・具体的な対応（必須）：
+          </label>
+          <textarea
+            id="respBody"
+            rows="4"
+            placeholder="例：音出しの前に必ず予告する／耳栓OKにする／しんどそうなら一時退室を認める など"
+          ></textarea>
+
+          <label for="respLevel">
+            重要度・種類（任意）：
+          </label>
+          <select id="respLevel">
+            <option value="">未指定</option>
+            <option value="danger">danger（安全上の危険）</option>
+            <option value="support">support（見守り・配慮）</option>
+            <option value="medical">medical（医療・健康面）</option>
+          </select>
+
+          <button id="addResponseBtn">対応表に追加</button>
+        </div>
+      </div>
+
+      <div id="responseDetail" class="info-block hidden">
+        <div class="info-section-title">選択された対応・チェック項目の詳細</div>
+        <p id="responseDetailTitle"></p>
+        <div id="responseDetailBody"></div>
+        <p id="responseDetailLevel" class="small-text"></p>
+      </div>
+    </section>
+
+    <!-- 2. 親の付き添い必須ラインチェックリスト（汎用） -->
+    <section class="card">
+      <h2>2. 親の付き添い必須ラインチェックリスト（汎用）</h2>
       <p>
         日常生活と学校生活の様子をもとに、付き添いが必要かどうかの目安を確認します。<br />
-        必要に応じて、下のボタンから項目を追加できます。
+        0・1で登録した内容も参考にしながら使ってください。
       </p>
 
       <div class="checklist-container">
@@ -91,7 +154,6 @@
               発作やアレルギーなど、医療的な緊急対応が必要になる可能性がある
             </label>
           </form>
-          <button id="addDailyItemBtn" class="sub-btn">日常生活の項目を追加</button>
         </div>
 
         <div class="checklist-block">
@@ -118,7 +180,6 @@
               学校で医療的ケア（発作対応・エピペン・吸入など）の準備をしている
             </label>
           </form>
-          <button id="addSchoolItemBtn" class="sub-btn">学校生活の項目を追加</button>
         </div>
       </div>
 
@@ -126,13 +187,10 @@
       <div id="checklistResult" class="info-block hidden"></div>
     </section>
 
-    <!-- 3. その場の対応フロー -->
+    <!-- 3. その場の対応フロー（汎用） -->
     <section class="card">
-      <h2>3. その場の対応フロー</h2>
-      <p>
-        トラブルや心配な行動が出たときに、状況に応じて流れを確認できます。<br />
-        必要に応じて、対応手順を自分でメモとして追加できます。
-      </p>
+      <h2>3. その場の対応フロー（汎用）</h2>
+      <p>トラブルや心配な行動が出たときに、状況に応じて流れを確認できます。</p>
 
       <label for="incidentType">状況を選んでください：</label>
       <select id="incidentType">
@@ -152,20 +210,6 @@
       </select>
 
       <div id="incidentFlow" class="info-block hidden"></div>
-
-      <div class="custom-incident">
-        <label for="customIncidentText">
-          追記したい対応手順・注意点（自由記述）：
-        </label>
-        <textarea
-          id="customIncidentText"
-          rows="3"
-          placeholder="例：この子の場合は、パニック時に〇〇さんが声をかける／先に他の子を別室に移動させる など"
-        ></textarea>
-        <button id="addIncidentNoteBtn" class="sub-btn">
-          対応フローに追記
-        </button>
-      </div>
     </section>
 
     <!-- 4. メモ欄 -->
