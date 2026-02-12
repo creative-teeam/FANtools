@@ -8,7 +8,7 @@
 <body>
   <header>
     <h1>子どもの特性・配慮ガイド（演劇・ワークショップ向け）</h1>
-    <p>病名・障害・特性の一覧と、それに対応するチェックリストや対応表を管理できます。</p>
+    <p>病名・障害・特性、対応チェックリスト、対応フローを現場に合わせて随時追加できます。</p>
   </header>
 
   <main>
@@ -121,95 +121,183 @@
       </div>
     </section>
 
-    <!-- 2. 親の付き添い必須ラインチェックリスト（汎用） -->
+    <!-- 2. 親の付き添い必須ラインチェックリスト（随時テンプレ追加） -->
     <section class="card">
-      <h2>2. 親の付き添い必須ラインチェックリスト（汎用）</h2>
+      <h2>2. 親の付き添い必須ラインチェックリスト</h2>
       <p>
         日常生活と学校生活の様子をもとに、付き添いが必要かどうかの目安を確認します。<br />
-        0・1で登録した内容も参考にしながら使ってください。
+        右側で「判定結果のテンプレ」を追加・選択できます。
       </p>
 
-      <div class="checklist-container">
-        <div class="checklist-block">
-          <h3>日常生活での様子</h3>
-          <form id="dailyChecklist">
-            <label>
-              <input type="checkbox" name="daily" value="danger" />
-              目を離すとすぐにどこかへ行ってしまう・迷子になりやすい
-            </label>
-            <label>
-              <input type="checkbox" name="daily" value="danger" />
-              危険な場所（道路・高いところ・台所など）に繰り返し行ってしまう
-            </label>
-            <label>
-              <input type="checkbox" name="daily" value="support" />
-              知らない人との距離感が近すぎる・身体に触ってしまう
-            </label>
-            <label>
-              <input type="checkbox" name="daily" value="support" />
-              強いこだわりやパニックがあり、家族でないと落ち着かせるのが難しい
-            </label>
-            <label>
-              <input type="checkbox" name="daily" value="medical" />
-              発作やアレルギーなど、医療的な緊急対応が必要になる可能性がある
-            </label>
-          </form>
+      <div class="flex-row">
+        <!-- 左：実際のチェックリスト -->
+        <div class="checklist-block large">
+          <h3>日常生活・学校生活での様子</h3>
+
+          <div class="checklist-container">
+            <div class="checklist-block inner">
+              <h4>日常生活</h4>
+              <form id="dailyChecklist">
+                <label>
+                  <input type="checkbox" name="daily" value="danger" />
+                  目を離すとすぐにどこかへ行ってしまう・迷子になりやすい
+                </label>
+                <label>
+                  <input type="checkbox" name="daily" value="danger" />
+                  危険な場所（道路・高いところ・台所など）に繰り返し行ってしまう
+                </label>
+                <label>
+                  <input type="checkbox" name="daily" value="support" />
+                  知らない人との距離感が近すぎる・身体に触ってしまう
+                </label>
+                <label>
+                  <input type="checkbox" name="daily" value="support" />
+                  強いこだわりやパニックがあり、家族でないと落ち着かせるのが難しい
+                </label>
+                <label>
+                  <input type="checkbox" name="daily" value="medical" />
+                  発作やアレルギーなど、医療的な緊急対応が必要になる可能性がある
+                </label>
+              </form>
+              <button id="addDailyItemBtn" class="sub-btn">
+                日常生活の項目を追加
+              </button>
+            </div>
+
+            <div class="checklist-block inner">
+              <h4>学校生活・集団活動</h4>
+              <form id="schoolChecklist">
+                <label>
+                  <input type="checkbox" name="school" value="support" />
+                  授業中に席を立って歩き回ることがよくある
+                </label>
+                <label>
+                  <input type="checkbox" name="school" value="support" />
+                  先生から「1対1のサポートがあると安心」と言われている
+                </label>
+                <label>
+                  <input type="checkbox" name="school" value="danger" />
+                  他の子を押す・叩く・強く抱きつくなどの行動が繰り返し見られる
+                </label>
+                <label>
+                  <input type="checkbox" name="school" value="support" />
+                  からかわれやすい／トラブルに巻き込まれやすいと言われている
+                </label>
+                <label>
+                  <input type="checkbox" name="school" value="medical" />
+                  学校で医療的ケア（発作対応・エピペン・吸入など）の準備をしている
+                </label>
+              </form>
+              <button id="addSchoolItemBtn" class="sub-btn">
+                学校生活の項目を追加
+              </button>
+            </div>
+          </div>
+
+          <button id="evaluateChecklist">付き添いの必要度を判定</button>
+          <div id="checklistResult" class="info-block hidden"></div>
         </div>
 
-        <div class="checklist-block">
-          <h3>学校生活・集団活動での様子</h3>
-          <form id="schoolChecklist">
-            <label>
-              <input type="checkbox" name="school" value="support" />
-              授業中に席を立って歩き回ることがよくある
-            </label>
-            <label>
-              <input type="checkbox" name="school" value="support" />
-              先生から「1対1のサポートがあると安心」と言われている
-            </label>
-            <label>
-              <input type="checkbox" name="school" value="danger" />
-              他の子を押す・叩く・強く抱きつくなどの行動が繰り返し見られる
-            </label>
-            <label>
-              <input type="checkbox" name="school" value="support" />
-              からかわれやすい／トラブルに巻き込まれやすいと言われている
-            </label>
-            <label>
-              <input type="checkbox" name="school" value="medical" />
-              学校で医療的ケア（発作対応・エピペン・吸入など）の準備をしている
-            </label>
-          </form>
+        <!-- 右：判定テンプレ一覧＋追加 -->
+        <div class="form-block">
+          <h3>判定結果テンプレを管理</h3>
+          <p class="small-text">
+            付き添い「必須」「推奨」「不要」などのコメントテンプレを登録しておき、<br />
+            判定結果に合わせて選んで表示できます。
+          </p>
+
+          <label for="resultTemplateSelect">テンプレートを選択：</label>
+          <select id="resultTemplateSelect">
+            <!-- JSで追加 -->
+          </select>
+
+          <label for="resultTemplateBody">テンプレート内容：</label>
+          <textarea
+            id="resultTemplateBody"
+            rows="5"
+            placeholder="ここにテンプレ内容が表示されます"
+          ></textarea>
+
+          <button id="applyTemplateBtn" class="sub-btn">
+            判定結果にこのテンプレを反映
+          </button>
+
+          <hr />
+
+          <h4>新しいテンプレを追加</h4>
+          <label for="newTemplateName">テンプレ名：</label>
+          <input
+            type="text"
+            id="newTemplateName"
+            placeholder="例：付き添い原則必須（医療リスクあり）"
+          />
+
+          <label for="newTemplateBody">内容：</label>
+          <textarea
+            id="newTemplateBody"
+            rows="4"
+            placeholder="例：医療的なリスクがあるため、必ず保護者または支援者の付き添いをお願いします。..."
+          ></textarea>
+
+          <button id="addTemplateBtn">テンプレを追加</button>
         </div>
       </div>
-
-      <button id="evaluateChecklist">付き添いの必要度を判定</button>
-      <div id="checklistResult" class="info-block hidden"></div>
     </section>
 
-    <!-- 3. その場の対応フロー（汎用） -->
+    <!-- 3. その場の対応フロー（既存＋カスタム追加） -->
     <section class="card">
-      <h2>3. その場の対応フロー（汎用）</h2>
-      <p>トラブルや心配な行動が出たときに、状況に応じて流れを確認できます。</p>
+      <h2>3. その場の対応フロー</h2>
+      <p>
+        トラブルや心配な行動が出たときの流れを確認します。<br />
+        既存パターンに加え、任意の「カスタムフロー」を追加できます。
+      </p>
 
-      <label for="incidentType">状況を選んでください：</label>
-      <select id="incidentType">
-        <option value="">選択してください</option>
-        <option value="immediateDanger">
-          身体の危険がある（押す・叩く・走り出す・危険な場所）
-        </option>
-        <option value="psychological">
-          他の子が怖がっている・強い不安を感じている
-        </option>
-        <option value="ruleBreak">
-          ルール違反が何度も続いている
-        </option>
-        <option value="medicalEmergency">
-          発作・アレルギー症状など医療的な緊急事態
-        </option>
-      </select>
+      <div class="flex-row">
+        <!-- 左：選択＋表示 -->
+        <div class="list-block">
+          <label for="incidentType">状況を選んでください：</label>
+          <select id="incidentType">
+            <option value="">選択してください</option>
+            <option value="immediateDanger">
+              【既存】身体の危険がある
+            </option>
+            <option value="psychological">
+              【既存】他の子が怖がっている・不安
+            </option>
+            <option value="ruleBreak">
+              【既存】ルール違反が何度も続く
+            </option>
+            <option value="medicalEmergency">
+              【既存】医療的な緊急事態
+            </option>
+            <!-- カスタムはJSで追加 -->
+          </select>
 
-      <div id="incidentFlow" class="info-block hidden"></div>
+          <div id="incidentFlow" class="info-block hidden"></div>
+        </div>
+
+        <!-- 右：カスタムフロー追加 -->
+        <div class="form-block">
+          <h3>カスタム対応フローを追加</h3>
+          <label for="customFlowName">フロー名（必須）：</label>
+          <input
+            type="text"
+            id="customFlowName"
+            placeholder="例：稽古開始前に落ち着きがないとき"
+          />
+
+          <label for="customFlowBody">
+            手順・対応内容（必須）：
+          </label>
+          <textarea
+            id="customFlowBody"
+            rows="6"
+            placeholder="例：1) 入口で迎える担当を決めておく\n2) 会場に入る前に今日の流れを短く説明する\n3) ..."
+          ></textarea>
+
+          <button id="addCustomFlowBtn">カスタムフローを追加</button>
+        </div>
+      </div>
     </section>
 
     <!-- 4. メモ欄 -->
