@@ -31,7 +31,7 @@ header p {
 
 /* メインレイアウト */
 main {
-  max-width: 1000px;
+  max-width: 1100px;
   margin: 1.5rem auto 2rem;
   padding: 0 1rem;
 }
@@ -100,6 +100,7 @@ button:hover {
   background: #1d4ed8;
 }
 
+/* サブボタン */
 .sub-btn {
   margin-top: 0.6rem;
   background: #4b5563;
@@ -174,13 +175,47 @@ footer {
   color: #2563eb;
 }
 
-/* カスタム incident 追記エリア */
-.custom-incident {
+/* 0,1 のレイアウト */
+.flex-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
   margin-top: 1rem;
 }
 
+.list-block {
+  flex: 1 1 260px;
+  min-width: 260px;
+}
+
+.form-block {
+  flex: 1 1 320px;
+  min-width: 280px;
+}
+
+/* 一覧リスト */
+.item-list {
+  list-style: none;
+  padding-left: 0;
+  margin-top: 0.5rem;
+}
+
+.item-list li {
+  padding: 0.4rem 0.6rem;
+  border-radius: 4px;
+  border: 1px solid #e5e7eb;
+  background: #f9fafb;
+  cursor: pointer;
+  margin-bottom: 0.4rem;
+  font-size: 0.95rem;
+}
+
+.item-list li:hover {
+  background: #e5f0ff;
+}
+
 /* スマホ対応 */
-@media (max-width: 600px) {
+@media (max-width: 700px) {
   select,
   input[type="text"] {
     width: 100%;
@@ -188,6 +223,10 @@ footer {
   }
 
   .checklist-container {
+    flex-direction: column;
+  }
+
+  .flex-row {
     flex-direction: column;
   }
 }
