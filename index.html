@@ -12,28 +12,28 @@
   </header>
 
   <main>
-    <!-- 0. 想定外の障害・特性の検索欄（全体用） -->
+    <!-- 0. 想定外の障害・病気・特性の検索（診断名） -->
     <section class="card">
-      <h2>0. 想定外の障害・特性に対する検索</h2>
+      <h2>0. 想定外の障害・病気・特性の検索</h2>
       <p>
-        ここに診断名・特性名・キーワードなどを自由入力してください。<br />
-        例：<span class="example-text">「感覚過敏」「境界知能」「行動障害」「選択性緘黙」など</span>
+        ここに診断名・特性名を入力してください。<br />
+        例：<span class="example-text">「境界知能」「学習障害」「選択性緘黙」「発達性協調運動障害」「チック」など</span>
       </p>
-      <label for="globalFreeSearch">自由入力（診断名・特性・気になるキーワードなど）：</label>
+      <label for="globalFreeSearch">診断名・特性名：</label>
       <input
         type="text"
         id="globalFreeSearch"
-        placeholder="例：感覚過敏、選択性緘黙、境界知能 など"
+        placeholder="例：自閉スペクトラム症、ADHD、学習障害、境界知能 など"
       />
-      <button id="globalFreeSearchBtn">ヒントを表示</button>
+      <button id="globalFreeSearchBtn">対処法を表示</button>
 
       <div id="globalFreeSearchResult" class="info-block hidden"></div>
     </section>
 
-    <!-- 1. 障害・病気を選ぶセクション -->
+    <!-- 1. 代表的な障害・病気・特性を選ぶ -->
     <section class="card">
-      <h2>1. 障害・病気・特性を選ぶ</h2>
-      <p>該当するものを選択してください（複数あれば順番に確認してください）。</p>
+      <h2>1. 代表的な障害・病気・特性を選ぶ</h2>
+      <p>よくある代表的なケースは、ここから選択して対処法を見られます。</p>
 
       <label for="conditionSelect">障害・病気・特性：</label>
       <select id="conditionSelect">
@@ -52,23 +52,6 @@
         <div id="basicMeasures"></div>
         <div id="risks"></div>
         <div id="specialMeasures"></div>
-
-        <!-- この子に特有の想定外特性の検索欄 -->
-        <div class="free-search-section">
-          <div class="info-section-title">この子に特有の「想定外の特性」や心配ごと</div>
-          <p class="small-text">
-            例：<span class="example-text">「男の子だけに近づく」「女の子の後ろに立つ」「大きな声が極端に苦手」など</span><br />
-            キーワードを入れると、個別の見守りポイントのヒントを表示します。
-          </p>
-          <label for="conditionFreeSearch">特性・行動キーワード：</label>
-          <input
-            type="text"
-            id="conditionFreeSearch"
-            placeholder="例：女の子の後ろに立つ、距離感が近い など"
-          />
-          <button id="conditionFreeSearchBtn">ヒントを表示</button>
-          <div id="conditionFreeSearchResult" class="info-block inner hidden"></div>
-        </div>
       </div>
     </section>
 
@@ -133,22 +116,6 @@
 
       <button id="evaluateChecklist">付き添いの必要度を判定</button>
       <div id="checklistResult" class="info-block hidden"></div>
-
-      <!-- チェックリスト用 想定外の事態フリーワード -->
-      <div class="free-search-section">
-        <div class="info-section-title">チェックリストでは拾いきれない「想定外の事態」</div>
-        <p class="small-text">
-          例：<span class="example-text">「特定の子だけを執拗に追いかける」「急に叫ぶ」「特定の音でパニックになる」など</span>
-        </p>
-        <label for="checklistFreeSearch">気になっている行動・状況：</label>
-        <input
-          type="text"
-          id="checklistFreeSearch"
-          placeholder="例：特定の子だけを追いかける、音に極端に反応する など"
-        />
-        <button id="checklistFreeSearchBtn">ヒントを表示</button>
-        <div id="checklistFreeSearchResult" class="info-block inner hidden"></div>
-      </div>
     </section>
 
     <!-- 3. その場の対応フロー -->
@@ -159,30 +126,21 @@
       <label for="incidentType">状況を選んでください：</label>
       <select id="incidentType">
         <option value="">選択してください</option>
-        <option value="immediateDanger">身体の危険がある（押す・叩く・走り出す・危険な場所）</option>
-        <option value="psychological">他の子が怖がっている・強い不安を感じている</option>
-        <option value="ruleBreak">ルール違反が何度も続いている</option>
-        <option value="medicalEmergency">発作・アレルギー症状など医療的な緊急事態</option>
+        <option value="immediateDanger">
+          身体の危険がある（押す・叩く・走り出す・危険な場所）
+        </option>
+        <option value="psychological">
+          他の子が怖がっている・強い不安を感じている
+        </option>
+        <option value="ruleBreak">
+          ルール違反が何度も続いている
+        </option>
+        <option value="medicalEmergency">
+          発作・アレルギー症状など医療的な緊急事態
+        </option>
       </select>
 
       <div id="incidentFlow" class="info-block hidden"></div>
-
-      <!-- 対応フロー用 想定外の事態フリーワード -->
-      <div class="free-search-section">
-        <div class="info-section-title">メニューにない「具体的な状況キーワード」</div>
-        <p class="small-text">
-          例：<span class="example-text">「男の子だけを追い回す」「急に土下座する」「大声で笑い続ける」など</span><br />
-          状況をキーワードで入れてください。
-        </p>
-        <label for="incidentFreeSearch">具体的な状況キーワード：</label>
-        <input
-          type="text"
-          id="incidentFreeSearch"
-          placeholder="例：女の子の後ろに立ち続ける、大声で笑い続ける など"
-        />
-        <button id="incidentFreeSearchBtn">ヒントを表示</button>
-        <div id="incidentFreeSearchResult" class="info-block inner hidden"></div>
-      </div>
     </section>
   </main>
 
