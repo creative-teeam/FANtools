@@ -149,7 +149,7 @@ footer {
   display: flex;
   flex-wrap: wrap;
   gap: 1rem;
-  margin-top: 1rem;
+  margin-top: 0.5rem;
 }
 
 .checklist-block {
@@ -164,6 +164,10 @@ footer {
   margin-top: 0;
 }
 
+.checklist-block.inner {
+  background: #ffffff;
+}
+
 /* サブテキストなど */
 .small-text {
   font-size: 0.85rem;
@@ -175,7 +179,7 @@ footer {
   color: #2563eb;
 }
 
-/* 0,1 のレイアウト */
+/* 0,1,2,3 の2カラムレイアウト */
 .flex-row {
   display: flex;
   flex-wrap: wrap;
@@ -191,6 +195,10 @@ footer {
 .form-block {
   flex: 1 1 320px;
   min-width: 280px;
+}
+
+.checklist-block.large {
+  flex: 2 1 480px;
 }
 
 /* 一覧リスト */
