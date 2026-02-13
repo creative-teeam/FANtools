@@ -222,6 +222,24 @@ footer {
   background: #e5f0ff;
 }
 
+/* 保存ボタン（画面右下固定） */
+.floating-save-btn {
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  z-index: 1000;
+  background: #16a34a;
+  color: #fff;
+  border-radius: 999px;
+  padding: 0.7rem 1.4rem;
+  box-shadow: 0 4px 8px rgba(22, 163, 74, 0.35);
+  font-weight: 600;
+}
+
+.floating-save-btn:hover {
+  background: #15803d;
+}
+
 /* スマホ対応 */
 @media (max-width: 700px) {
   select,
@@ -236,5 +254,11 @@ footer {
 
   .flex-row {
     flex-direction: column;
+  }
+
+  .floating-save-btn {
+    right: 12px;
+    bottom: 12px;
+    padding: 0.6rem 1.2rem;
   }
 }
