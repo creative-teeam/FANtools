@@ -301,19 +301,29 @@
       </div>
     </section>
 
-    <!-- 4. メモ欄 -->
+    <!-- 4. メモ欄＋メモログ -->
     <section class="card">
       <h2>4. メモ欄（団体ごとのルール・気づきの記録）</h2>
       <p>
         稽古や本番で気づいたこと、保護者と話して決めたルールなどを自由にメモしてください。<br />
-        「保存する」ボタンを押すと、このメモも含めてブラウザに保存され、次回復元できます。
+        「保存する」ボタンを押すと、このメモ内容が「ログ」として日時付きで下に追加され、次回以降も確認できます。
       </p>
-      <label for="freeMemo">自由メモ：</label>
+      <label for="freeMemo">自由メモ（現在の下書き）：</label>
       <textarea
         id="freeMemo"
         rows="6"
         placeholder="例：〇月〇日 初参加。○○の場面でパニックになりかけたが、□□の声かけで落ち着いた。次回も同じ対応を試してみる。"
       ></textarea>
+
+      <div id="memoLogContainer" class="info-block" style="margin-top:1.2rem;">
+        <div class="info-section-title">メモログ一覧（保存されたもの）</div>
+        <div id="memoLogList">
+          <!-- JSでログを追加 -->
+        </div>
+        <p class="small-text">
+          ※ここには「保存する」ボタンを押したときのメモ内容が、日時付きで蓄積されます。
+        </p>
+      </div>
     </section>
   </main>
 
