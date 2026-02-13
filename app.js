@@ -1,8 +1,8 @@
 // 保存用キー
-const STORAGE_KEY = "kids_support_tool_state_v2";
+const STORAGE_KEY = "kids_support_tool_state_v3";
 
 // ===============================
-// 0. 病名・障害・特性 一覧 管理
+// 0. 病名・障害・特性 一覧 管理（追加＋編集）
 // ===============================
 const diagnosisListEl = document.getElementById("diagnosisList");
 const addDiagnosisBtn = document.getElementById("addDiagnosisBtn");
@@ -10,60 +10,82 @@ const diagNameInput = document.getElementById("diagName");
 const diagNotesInput = document.getElementById("diagNotes");
 
 const diagnosisDetail = document.getElementById("diagnosisDetail");
-const diagnosisDetailName = document.getElementById("diagnosisDetailName");
-const diagnosisDetailNotes = document.getElementById("diagnosisDetailNotes");
+const diagnosisDetailNameInput = document.getElementById(
+  "diagnosisDetailNameInput"
+);
+const diagnosisDetailNotesInput = document.getElementById(
+  "diagnosisDetailNotesInput"
+);
+const updateDiagnosisBtn = document.getElementById("updateDiagnosisBtn");
 
-// 初期データ（保存があれば後で上書きされる）
 let diagnoses = [
   {
+    id: "d1",
     name: "自閉スペクトラム症（ASD）",
     notes:
       "距離感・予定変更・感覚過敏などに注意。女の子との距離を詰めやすい場合、パーソナルスペースのルールを全体で共有。"
   },
   {
+    id: "d2",
     name: "ADHD（注意欠如・多動症）",
     notes:
       "走り出しやすい・じっとしていられない場合、動ける役割を用意する。危険な場面では大人が近くで見守る。"
   }
 ];
 
+let currentDiagnosisId = null;
+
 function renderDiagnosisList() {
   diagnosisListEl.innerHTML = "";
-  diagnoses.forEach((d, index) => {
+  diagnoses.forEach((d) => {
     const li = document.createElement("li");
     li.textContent = d.name;
-    li.dataset.index = index;
-    li.addEventListener("click", () => showDiagnosisDetail(index));
+    li.dataset.id = d.id;
+    li.addEventListener("click", () => showDiagnosisDetail(d.id));
     diagnosisListEl.appendChild(li);
   });
 }
 
-function showDiagnosisDetail(index) {
-  const d = diagnoses[index];
-  diagnosisDetailName.innerHTML = `<strong>${d.name}</strong>`;
-  diagnosisDetailNotes.innerHTML = d.notes
-    ? `<p>${d.notes.replace(/\n/g, "<br />")}</p>`
-    : "<p>（まだメモが登録されていません）</p>";
+function showDiagnosisDetail(id) {
+  const d = diagnoses.find((x) => x.id === id);
+  if (!d) return;
+  currentDiagnosisId = id;
+  diagnosisDetailNameInput.value = d.name;
+  diagnosisDetailNotesInput.value = d.notes || "";
   diagnosisDetail.classList.remove("hidden");
 }
 
 addDiagnosisBtn.addEventListener("click", () => {
   const name = diagNameInput.value.trim();
   const notes = diagNotesInput.value.trim();
-
   if (!name) {
     alert("名前を入力してください。");
     return;
   }
-
-  diagnoses.push({ name, notes });
+  const id = "d_" + Date.now();
+  diagnoses.push({ id, name, notes });
   renderDiagnosisList();
   diagNameInput.value = "";
   diagNotesInput.value = "";
 });
 
+updateDiagnosisBtn.addEventListener("click", () => {
+  if (!currentDiagnosisId) return;
+  const d = diagnoses.find((x) => x.id === currentDiagnosisId);
+  if (!d) return;
+  const name = diagnosisDetailNameInput.value.trim();
+  const notes = diagnosisDetailNotesInput.value.trim();
+  if (!name) {
+    alert("名前は空にできません。");
+    return;
+  }
+  d.name = name;
+  d.notes = notes;
+  renderDiagnosisList();
+});
+
 // ===============================
-// 1. 対応表・チェックリスト 一覧 管理
+// 1. 対応表・チェックリスト 一覧 管理（追加＋編集）
 // ===============================
 const responseListEl = document.getElementById("responseList");
 const addResponseBtn = document.getElementById("addResponseBtn");
@@ -72,18 +94,27 @@ const respBodyInput = document.getElementById("respBody");
 const respLevelSelect = document.getElementById("respLevel");
 
 const responseDetail = document.getElementById("responseDetail");
-const responseDetailTitle = document.getElementById("responseDetailTitle");
-const responseDetailBody = document.getElementById("responseDetailBody");
-const responseDetailLevel = document.getElementById("responseDetailLevel");
+const responseDetailTitleInput = document.getElementById(
+  "responseDetailTitleInput"
+);
+const responseDetailBodyInput = document.getElementById(
+  "responseDetailBodyInput"
+);
+const responseDetailLevelSelect = document.getElementById(
+  "responseDetailLevelSelect"
+);
+const updateResponseBtn = document.getElementById("updateResponseBtn");
 
 let responses = [
   {
+    id: "r1",
     title: "大きな音が苦手な子への配慮",
     body:
       "音出しや大きな拍手の前には、必ず「今から音が出るよ」と予告する。\n必要であればイヤーマフや耳栓の使用を許可する。\n本番中にどうするかは事前に本人・保護者と相談する。",
     level: "support"
   },
   {
+    id: "r2",
     title: "発作がある子の緊急時対応",
     body:
       "事前に保護者から発作の種類・頻度・対応方法を聞き、紙で共有する。\n発作が起きたときは、周囲の危険物をどかし、頭を守る。\n必要に応じて119番通報し、保護者に連絡する。",
@@ -91,34 +122,26 @@ let responses = [
   }
 ];
 
+let currentResponseId = null;
+
 function renderResponseList() {
   responseListEl.innerHTML = "";
-  responses.forEach((r, index) => {
+  responses.forEach((r) => {
     const li = document.createElement("li");
     li.textContent = r.title;
-    li.dataset.index = index;
-    li.addEventListener("click", () => showResponseDetail(index));
+    li.dataset.id = r.id;
+    li.addEventListener("click", () => showResponseDetail(r.id));
     responseListEl.appendChild(li);
   });
 }
 
-function showResponseDetail(index) {
-  const r = responses[index];
-  responseDetailTitle.innerHTML = `<strong>${r.title}</strong>`;
-  responseDetailBody.innerHTML = `<p>${r.body.replace(/\n/g, "<br />")}</p>`;
-
-  let levelText = "";
-  if (r.level === "danger") {
-    levelText = "重要度：danger（安全上の危険を伴う項目）";
-  } else if (r.level === "support") {
-    levelText = "重要度：support（見守り・配慮が中心の項目）";
-  } else if (r.level === "medical") {
-    levelText = "重要度：medical（医療・健康面に関わる項目）";
-  } else {
-    levelText = "重要度：未指定";
-  }
-  responseDetailLevel.textContent = levelText;
-
+function showResponseDetail(id) {
+  const r = responses.find((x) => x.id === id);
+  if (!r) return;
+  currentResponseId = id;
+  responseDetailTitleInput.value = r.title;
+  responseDetailBodyInput.value = r.body || "";
+  responseDetailLevelSelect.value = r.level || "";
   responseDetail.classList.remove("hidden");
 }
 
@@ -126,18 +149,33 @@ addResponseBtn.addEventListener("click", () => {
   const title = respTitleInput.value.trim();
   const body = respBodyInput.value.trim();
   const level = respLevelSelect.value;
-
   if (!title || !body) {
     alert("項目名と内容を入力してください。");
     return;
   }
-
-  responses.push({ title, body, level });
+  const id = "r_" + Date.now();
+  responses.push({ id, title, body, level });
   renderResponseList();
-
   respTitleInput.value = "";
   respBodyInput.value = "";
   respLevelSelect.value = "";
+});
+
+updateResponseBtn.addEventListener("click", () => {
+  if (!currentResponseId) return;
+  const r = responses.find((x) => x.id === currentResponseId);
+  if (!r) return;
+  const title = responseDetailTitleInput.value.trim();
+  const body = responseDetailBodyInput.value.trim();
+  const level = responseDetailLevelSelect.value;
+  if (!title || !body) {
+    alert("項目名と内容を入力してください。");
+    return;
+  }
+  r.title = title;
+  r.body = body;
+  r.level = level;
+  renderResponseList();
 });
 
 // ===============================
@@ -454,7 +492,7 @@ addCustomFlowBtn.addEventListener("click", () => {
     return;
   }
 
-  const id = `cf_${Date.now()}`;
+  const id = "cf_" + Date.now();
   customFlows.push({ id, name, body });
 
   const opt = document.createElement("option");
@@ -467,24 +505,23 @@ addCustomFlowBtn.addEventListener("click", () => {
 });
 
 // ===============================
-// 4. メモ欄 + メモログ & 全体保存・復元
+// 4. メモ欄 + メモログ（編集・削除可） & 全体保存・復元
 // ===============================
 const freeMemoEl = document.getElementById("freeMemo");
 const memoLogListEl = document.getElementById("memoLogList");
 const saveAllBtn = document.getElementById("saveAllBtn");
 
-// メモログ：{ timestamp, text }
+// メモログ：{ id, timestamp, text }
 let memoLogs = [];
 
-// メモログの描画
 function renderMemoLogs() {
   memoLogListEl.innerHTML = "";
   if (memoLogs.length === 0) {
-    memoLogListEl.innerHTML = "<p class=\"small-text\">まだメモログはありません。</p>";
+    memoLogListEl.innerHTML =
+      '<p class="small-text">まだメモログはありません。</p>';
     return;
   }
 
-  // 新しい順に表示
   const logs = [...memoLogs].sort((a, b) => b.timestamp - a.timestamp);
 
   logs.forEach((log) => {
@@ -495,17 +532,67 @@ function renderMemoLogs() {
       String(date.getHours()).padStart(2, "0")
     }:${String(date.getMinutes()).padStart(2, "0")}`;
 
-    const div = document.createElement("div");
-    div.className = "info-block";
-    div.style.marginTop = "0.6rem";
-    div.innerHTML = `
-      <div class="info-section-title">${dateStr} のメモ</div>
-      <p>${(log.text || "")
-        .replace(/\n/g, "<br />")
-        .replace(/ {2}/g, "&nbsp;&nbsp;")}</p>
-    `;
-    memoLogListEl.appendChild(div);
+    const wrapper = document.createElement("div");
+    wrapper.className = "info-block";
+    wrapper.style.marginTop = "0.6rem";
+
+    const header = document.createElement("div");
+    header.style.display = "flex";
+    header.style.justifyContent = "space-between";
+    header.style.alignItems = "center";
+
+    const title = document.createElement("div");
+    title.className = "info-section-title";
+    title.textContent = `${dateStr} のメモ`;
+
+    const btnArea = document.createElement("div");
+
+    const editBtn = document.createElement("button");
+    editBtn.textContent = "編集";
+    editBtn.className = "sub-btn";
+    editBtn.style.marginRight = "0.4rem";
+    editBtn.addEventListener("click", () => editMemoLog(log.id));
+
+    const delBtn = document.createElement("button");
+    delBtn.textContent = "削除";
+    delBtn.className = "sub-btn";
+    delBtn.style.backgroundColor = "#b91c1c";
+    delBtn.addEventListener("click", () => deleteMemoLog(log.id));
+
+    btnArea.appendChild(editBtn);
+    btnArea.appendChild(delBtn);
+
+    header.appendChild(title);
+    header.appendChild(btnArea);
+
+    const body = document.createElement("p");
+    body.innerHTML = (log.text || "")
+      .replace(/\n/g, "<br />")
+      .replace(/ {2}/g, "&nbsp;&nbsp;");
+
+    wrapper.appendChild(header);
+    wrapper.appendChild(body);
+
+    memoLogListEl.appendChild(wrapper);
   });
+}
+
+function editMemoLog(id) {
+  const log = memoLogs.find((l) => l.id === id);
+  if (!log) return;
+  const newText = prompt(
+    "メモ内容を編集してください：",
+    log.text || ""
+  );
+  if (newText === null) return; // キャンセル
+  log.text = newText;
+  renderMemoLogs();
+}
+
+function deleteMemoLog(id) {
+  if (!confirm("このメモログを削除しますか？")) return;
+  memoLogs = memoLogs.filter((l) => l.id !== id);
+  renderMemoLogs();
 }
 
 // 状態を1つのオブジェクトにまとめる
@@ -604,6 +691,7 @@ saveAllBtn.addEventListener("click", () => {
     const text = freeMemoEl.value.trim();
     if (text) {
       memoLogs.push({
+        id: "m_" + Date.now(),
         timestamp: Date.now(),
         text
       });
